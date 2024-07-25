@@ -98,7 +98,7 @@ See https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
 
 ------------------------------------------------------------------------
 
-| [***Install "AM"***](https://github.com/ivan-hc/AM) | [***See all available apps***](https://portable-linux-apps.github.io) |
-| - | - |
+| [***Install "AM"***](https://github.com/ivan-hc/AM) | [***See all available apps***](https://portable-linux-apps.github.io) | [***Support me on ko-fi.com***](https://ko-fi.com/IvanAlexHC) | [***Support me on PayPal.me***](https://paypal.me/IvanAlexHC) |
+| - | - | - | - |
 
 ------------------------------------------------------------------------
