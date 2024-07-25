@@ -36,7 +36,6 @@ Keywords[ru]=виртуализация;
 MimeType=application/x-virtualbox-vbox;application/x-virtualbox-vbox-extpack;application/x-virtualbox-ovf;application/x-virtualbox-ova;
 Icon=virtualbox
 Categories=System;
-Actions=Manager;
 Comment=Run several virtual systems on a single host computer
 Comment[de]=Mehrere virtuelle Maschinen auf einem einzigen Rechner ausführen
 Comment[it]=Esegui più macchine virtuali su un singolo computer
