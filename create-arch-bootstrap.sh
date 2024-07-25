@@ -34,10 +34,10 @@ devel_pkgs="base-devel git meson mingw-w64-gcc cmake"
 # packages from the Chaotic-AUR repo
 export packagelist="${audio_pkgs} ${video_pkgs} ${wine_pkgs} ${devel_pkgs} \
 	ttf-dejavu ttf-liberation xorg-xwayland wayland \
-	xorg-server xorg-apps virtualbox curl"
+	xorg-server xorg-apps virtualbox curl virtualbox-kvm"
 
 # If you want to install AUR packages, specify them in this variable
-export aur_packagelist="virtualbox-kvm"
+export aur_packagelist=""
 
 # ALHP is a repository containing packages from the official Arch Linux
 # repos recompiled with -O3, LTO and optimizations for modern CPUs for
