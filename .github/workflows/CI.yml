@@ -1,0 +1,50 @@
+name: Release VirtualBox Appimage
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: build
+      run: |
+        APP=virtualbox
+        chmod +x create-arch-bootstrap.sh create-conty.sh "$APP"-conty-builder.sh
+        sudo ./create-arch-bootstrap.sh && ./create-conty.sh
+        mkdir -p tmp/"$APP".AppDir
+        mv ./conty.sh tmp/"$APP".AppDir/ || exit 1
+        ./"$APP"-conty-builder.sh
+        mkdir dist
+        mv *AppImage dist/
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: VirtualBox-x86_64.AppImage
+        path: 'dist'
+        
+  release:
+      needs: [build]
+      permissions: write-all
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/download-artifact@v1
+          with:
+            name: VirtualBox-x86_64.AppImage
+
+        - name: release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+            title: Continuous build
+            automatic_release_tag: continuous
+            prerelease: false
+            draft: false
+            files: |
+              VirtualBox-x86_64.AppImage
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
