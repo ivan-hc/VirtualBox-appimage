@@ -4,6 +4,8 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  schedule:
+    - cron: "0 14 * * 4"
   workflow_dispatch:
 
 jobs:
