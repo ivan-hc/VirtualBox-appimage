@@ -34,7 +34,8 @@ devel_pkgs="base-devel git meson mingw-w64-gcc cmake"
 # packages from the Chaotic-AUR repo
 export packagelist="${audio_pkgs} ${video_pkgs} ${wine_pkgs} ${devel_pkgs} \
 	ttf-dejavu ttf-liberation xorg-xwayland wayland \
-	xorg-server xorg-apps curl virtualbox-kvm"
+	xorg-server xorg-apps curl virtualbox-kvm \
+ 	kvantum qt5ct qt6ct"
 
 # If you want to install AUR packages, specify them in this variable
 export aur_packagelist=""
