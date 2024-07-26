@@ -68,6 +68,19 @@ At the first start, if necessary, the drivers for your video card will be downlo
 ### ◆ USB support
 See https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
 
+### ◆ Message "vboxdrv kernel module is not loaded"
+A message will appear at startup
+```
+WARNING: The vboxdrv kernel module is not loaded. Either there is no module
+         available for the current kernel (6.9.9-amd64) or it failed to
+         load. Please recompile the kernel module and install it by
+
+           sudo /sbin/vboxconfig
+
+         You will not be able to start VMs until this problem is fixed.
+```
+Just ignore it. VirtualBox KVM is still a development solution and the above message is what remains of the official release of VirtualBox.
+
 ---------------------------------
 
 ## Credits
