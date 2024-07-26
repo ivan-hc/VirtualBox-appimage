@@ -60,13 +60,18 @@ https://github.com/Kron4ek/Conty
 
 ---------------------------------
 
-## Troubleshot
+## Known issues
 
 ### ◆ Very slow first startup
 At the first start, if necessary, the drivers for your video card will be downloaded, via Conty (see screenshot above). This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
 
-### ◆ USB support
-See https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
+### ◆ USB support and extension pack
+Installation of extension packs is not supported and they can't be easily integrated, since VirtualBox KVM is diffeerent from upstream VirtualBox.
+
+To use USB pass-through, see https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
+
+### ◆ Guest additions
+Direct download is not implemented, download the iso separately from https://download.virtualbox.org/virtualbox/ and select it manually.
 
 ### ◆ Message "vboxdrv kernel module is not loaded"
 A message will appear at startup
