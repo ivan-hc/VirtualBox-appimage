@@ -361,7 +361,7 @@ if [ -n "${aur_packagelist}" ]; then
 	export -f install_aur_packages
 	CHROOT_AUR=1 HOME=/home/aur run_in_chroot bash -c install_aur_packages
 	mv "${bootstrap}"/home/aur/bad_aur_pkglist.txt "${bootstrap}"/opt
-	rm -rf "${bootstrap}"/home/aur
+	#rm -rf "${bootstrap}"/home/aur
 fi
 
 #run_in_chroot locale-gen
@@ -380,10 +380,14 @@ run_in_chroot sed -i 's/LANG=${LANG:-C}/LANG=$LANG/g' /etc/profile.d/locale.sh
 
 # Remove bloatwares
 run_in_chroot rm -Rf /usr/include /usr/man
+run_in_chroot bash -c 'find "${bootstrap}"/usr/share/doc/* -not -iname "*virtualbox*" -a -not -name "." -delete'
+run_in_chroot bash -c 'find "${bootstrap}"/usr/share/locale/*/*/* -not -iname "*virtualbox*" -a -not -name "." -delete'
 
 # Check if the command we are interested in has been installed
 if ! run_in_chroot which virtualbox; then echo "Command not found, exiting." && exit 1; fi
 
+# Exit chroot
+rm -rf "${bootstrap}"/home/aur
 unmount_chroot
 
 # Clear pacman package cache
