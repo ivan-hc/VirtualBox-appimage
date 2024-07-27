@@ -20,7 +20,7 @@ wine_pkgs="libpng gnutls openal \
 	v4l-utils libpulse alsa-plugins \
 	alsa-lib libjpeg-turbo \
 	libxcomposite \
-	libva \
+	libva wget \
 	vulkan-icd-loader sdl2 \
 	vkd3d ffmpeg gst-plugins-good gst-plugins-bad \
 	gst-plugins-ugly gst-plugins-base \
