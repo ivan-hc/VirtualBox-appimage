@@ -26,7 +26,7 @@ wine_pkgs="libpng gnutls openal \
 	gst-plugins-ugly gst-plugins-base \
 	gst-libav wget gst-plugin-pipewire"
 
-devel_pkgs="base-devel git meson mingw-w64-gcc cmake"
+devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 
 # Packages to install
 # You can add packages that you want and remove packages that you don't need
