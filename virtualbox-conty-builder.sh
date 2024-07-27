@@ -71,6 +71,6 @@ cd .. || exit 1
 
 # EXPORT THE APPDIR TO AN APPIMAGE
 VERSION=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
-ARCH=x86_64 VERSION="$VERSION" ./appimagetool -s ./"$APP".AppDir
-cd .. && mv ./tmp/*.AppImage ./VirtualBox-KVM-"$VERSION"-x86_86.AppImage || exit 1
+ARCH=x86_64 VERSION="$VERSION-1" ./appimagetool -s ./"$APP".AppDir
+cd .. && mv ./tmp/*.AppImage ./ || exit 1
 
