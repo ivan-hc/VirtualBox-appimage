@@ -2,6 +2,7 @@
 
 set -u
 APP=virtualbox
+VERSION=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
 
 # CREATE A TEMPORARY DIRECTORY
 mkdir -p tmp && cd tmp || exit 1
@@ -50,9 +51,48 @@ cat >> ./AppRun << 'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
 export UNION_PRELOAD="${HERE}"
-"${HERE}"/conty.sh virtualbox "$@"
+case "$1" in
+	'') "${HERE}"/conty.sh virtualbox;;
+	'VBoxBalloonCtrl') "${HERE}"/conty.sh "$1" "$@";;
+	'VBoxHeadless') "${HERE}"/conty.sh "$1" "$@";;
+	'VBoxManage') "${HERE}"/conty.sh "$1" "$@";;
+	'VBoxSDL') "${HERE}"/conty.sh "$1" "$@";;
+	'VirtualBox') "${HERE}"/conty.sh "$1" "$@";;
+	'VirtualBoxVM') "${HERE}"/conty.sh "$1" "$@";;
+	'rcvboxdrv') "${HERE}"/conty.sh "$1" "$@";;
+	'vbox-img') "${HERE}"/conty.sh "$1" "$@";;
+	'vboxballoonctrl') "${HERE}"/conty.sh "$1" "$@";;
+	'vboxheadless') "${HERE}"/conty.sh "$1" "$@";;
+	'vboxmanage') "${HERE}"/conty.sh "$1" "$@";;
+	'vboxreload') "${HERE}"/conty.sh "$1" "$@";;
+	'vboxsdl') "${HERE}"/conty.sh "$1" "$@";;
+	'vboxwebsrv') "${HERE}"/conty.sh "$1" "$@";;
+	'virtualboxvm') "${HERE}"/conty.sh "$1" "$@";;
+	'-h'|'--help') echo " Available commands:
+
+	- VBoxBalloonCtrl
+	- VBoxHeadless
+	- VBoxManage
+	- VBoxSDL
+	- VirtualBox
+	- VirtualBoxVM
+	- rcvboxdrv
+	- vbox-img
+	- vboxballoonctrl
+	- vboxheadless
+	- vboxmanage
+	- vboxreload
+	- vboxsdl
+	- vboxwebsrv
+	- virtualbox
+	- virtualboxvm
+	";;
+	'-v'|'--version') echo "VirtualBox VERSION KVM";;
+	'virtualbox'|*) "${HERE}"/conty.sh VirtualBox "$@";;
+esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig\|^$"
 EOF
 chmod a+x ./AppRun
+sed -i "s/VERSION/$VERSION/g" ./AppRun
 
 # DOWNLOAD CONTY
 if ! test -f ./*.sh; then
@@ -70,7 +110,6 @@ fi
 cd .. || exit 1
 
 # EXPORT THE APPDIR TO AN APPIMAGE
-VERSION=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
 ARCH=x86_64 VERSION="$VERSION" ./appimagetool -s ./"$APP".AppDir
 cd .. && mv ./tmp/*.AppImage ./VirtualBox-"$VERSION"-with-guest-additions-x86_64.AppImage || exit 1
 
