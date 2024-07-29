@@ -35,7 +35,7 @@ devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 export packagelist="${audio_pkgs} ${video_pkgs} ${wine_pkgs} ${devel_pkgs} \
 	which ttf-dejavu ttf-liberation xorg-xwayland wayland \
 	xorg-server xorg-apps curl virtualbox-kvm \
- 	kvantum kvantum-qt5 qt5ct qt6ct"
+ 	kvantum kvantum-qt5 qt5ct qt6ct qt5-svg qt6-svg"
 
 # If you want to install AUR packages, specify them in this variable
 export aur_packagelist=""
