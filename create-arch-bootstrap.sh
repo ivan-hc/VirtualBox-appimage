@@ -35,7 +35,7 @@ devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 export packagelist="${audio_pkgs} ${video_pkgs} ${wine_pkgs} ${devel_pkgs} \
 	which ttf-dejavu ttf-liberation xorg-xwayland wayland \
 	xorg-server xorg-apps curl virtualbox-kvm \
- 	kvantum kvantum-qt5 qt5ct qt6ct"
+ 	kvantum kvantum-qt5 qt5ct qt6ct ibus"
 
 # If you want to install AUR packages, specify them in this variable
 export aur_packagelist=""
@@ -378,11 +378,15 @@ run_in_chroot pacman -Q > "${bootstrap}"/pkglist.x86_64.txt
 run_in_chroot rm -f "${bootstrap}"/etc/locale.conf
 run_in_chroot sed -i 's/LANG=${LANG:-C}/LANG=$LANG/g' /etc/profile.d/locale.sh
 
+# Try to fix GTK/GDK error messages
+cp "${bootstrap}"/usr/lib/gtk-3.0/3.0.0/immodules/im-ibus.so "${bootstrap}"/usr/lib/
+cp "${bootstrap}"/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-* "${bootstrap}"/usr/lib/
+
 # Add guest additions
 vboxver=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
-wget https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso -O ./VBoxGuestAdditions.iso
+wget https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso -O ./VBoxGuestAdditions.iso || exit 1
 mkdir -p "${bootstrap}"/usr/lib/virtualbox/additions
-mv VBoxGuestAdditions.iso "${bootstrap}"/usr/lib/virtualbox/additions/
+mv VBoxGuestAdditions.iso "${bootstrap}"/usr/lib/virtualbox/additions/ || exit 1
 
 # Remove bloatwares
 run_in_chroot rm -Rf /usr/include /usr/man
