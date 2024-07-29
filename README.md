@@ -70,9 +70,6 @@ Installation of extension packs is not supported and they can't be easily integr
 
 To use USB pass-through, see https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
 
-### ◆ Guest additions
-Direct download is not implemented, download the iso separately from https://download.virtualbox.org/virtualbox/ and select it manually.
-
 ### ◆ Message "vboxdrv kernel module is not loaded"
 A message will appear at startup
 ```
