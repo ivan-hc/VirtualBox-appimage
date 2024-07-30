@@ -71,7 +71,7 @@ Installation of extension packs is not supported and they can't be easily integr
 To use USB pass-through, see https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
 
 ### ◆ Shortcuts
-If you right-click on the VM to createa launcher to the firtual machine, open the .desktop file and change the "Exec=" entry from
+If you right-click on the VM to createa launcher, open the .desktop file and change the "Exec=" entry from
 ```
 Exec=/usr/lib/virtualbox/VirtualBoxVM --comment ...
 ```
