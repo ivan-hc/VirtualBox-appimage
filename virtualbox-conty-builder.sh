@@ -53,39 +53,9 @@ HERE="$(dirname "$(readlink -f "${0}")")"
 export UNION_PRELOAD="${HERE}"
 case "$1" in
 	'') "${HERE}"/conty.sh virtualbox;;
-	'VBoxBalloonCtrl') "${HERE}"/conty.sh "$1" "$@";;
-	'VBoxHeadless') "${HERE}"/conty.sh "$1" "$@";;
-	'VBoxManage') "${HERE}"/conty.sh "$1" "$@";;
-	'VBoxSDL') "${HERE}"/conty.sh "$1" "$@";;
-	'VirtualBox') "${HERE}"/conty.sh "$1" "$@";;
 	'VirtualBoxVM') "${HERE}"/conty.sh "$1" "$@";;
-	'rcvboxdrv') "${HERE}"/conty.sh "$1" "$@";;
-	'vbox-img') "${HERE}"/conty.sh "$1" "$@";;
-	'vboxballoonctrl') "${HERE}"/conty.sh "$1" "$@";;
-	'vboxheadless') "${HERE}"/conty.sh "$1" "$@";;
-	'vboxmanage') "${HERE}"/conty.sh "$1" "$@";;
-	'vboxreload') "${HERE}"/conty.sh "$1" "$@";;
-	'vboxsdl') "${HERE}"/conty.sh "$1" "$@";;
-	'vboxwebsrv') "${HERE}"/conty.sh "$1" "$@";;
-	'virtualboxvm') "${HERE}"/conty.sh "$1" "$@";;
 	'-h'|'--help') echo " Available commands:
-
-	- VBoxBalloonCtrl
-	- VBoxHeadless
-	- VBoxManage
-	- VBoxSDL
-	- VirtualBox
 	- VirtualBoxVM
-	- rcvboxdrv
-	- vbox-img
-	- vboxballoonctrl
-	- vboxheadless
-	- vboxmanage
-	- vboxreload
-	- vboxsdl
-	- vboxwebsrv
-	- virtualbox
-	- virtualboxvm
 	";;
 	'-v'|'--version') echo "VirtualBox VERSION KVM";;
 	'virtualbox'|*) "${HERE}"/conty.sh VirtualBox "$@";;
