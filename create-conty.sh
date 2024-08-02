@@ -6,7 +6,7 @@ script_dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 # Enable this variable to use the system-wide mksquashfs/mkdwarfs instead
 # of those provided by the Conty project
-USE_SYS_UTILS=1
+USE_SYS_UTILS=0
 
 # Supported compression algorithms: lz4, zstd, gzip, xz, lzo
 # These are the algorithms supported by the integrated squashfuse
