@@ -386,7 +386,7 @@ mkdir -p "${bootstrap}"/usr/lib/virtualbox/additions
 mv VBoxGuestAdditions.iso "${bootstrap}"/usr/lib/virtualbox/additions/ || exit 1
 
 # Remove bloatwares
-run_in_chroot rm -Rf /usr/include /usr/man
+run_in_chroot rm -Rf /usr/include /usr/share/man
 run_in_chroot bash -c 'find "${bootstrap}"/usr/share/doc/* -not -iname "*virtualbox*" -a -not -name "." -delete'
 run_in_chroot bash -c 'find "${bootstrap}"/usr/share/locale/*/*/* -not -iname "*virtualbox*" -a -not -name "." -delete'
 
