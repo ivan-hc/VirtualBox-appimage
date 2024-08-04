@@ -32,10 +32,10 @@ devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 # You can add packages that you want and remove packages that you don't need
 # Apart from packages from the official Arch repos, you can also specify
 # packages from the Chaotic-AUR repo
-export packagelist="${audio_pkgs} ${video_pkgs} ${wine_pkgs} ${devel_pkgs} \
+export packagelist="${audio_pkgs} libpng gnutls openal \
 	which ttf-dejavu ttf-liberation xorg-xwayland wayland \
-	xorg-server xorg-apps curl virtualbox-kvm \
- 	kvantum kvantum-qt5 qt5ct qt6ct"
+	xorg-server xorg-apps curl virtualbox-kvm v4l-utils \
+ 	kvantum kvantum-qt5 qt5ct qt6ct libva sdl2 vulkan-icd-loader"
 
 # If you want to install AUR packages, specify them in this variable
 export aur_packagelist=""
