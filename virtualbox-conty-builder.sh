@@ -81,5 +81,5 @@ cd .. || exit 1
 
 # EXPORT THE APPDIR TO AN APPIMAGE
 ARCH=x86_64 VERSION="$VERSION" ./appimagetool -s ./"$APP".AppDir
-cd .. && mv ./tmp/*.AppImage ./VirtualBox-"$VERSION"-with-guest-additions-x86_64.AppImage || exit 1
+cd .. && mv ./tmp/*.AppImage ./VirtualBox-"$VERSION"-x86_64.AppImage || exit 1
 
