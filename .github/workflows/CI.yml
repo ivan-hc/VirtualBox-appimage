@@ -31,22 +31,24 @@ jobs:
       with:
         name: VirtualBox-x86_64.AppImage
         path: 'dist'
-  
-    - uses: dev-drprasad/delete-tag-and-release@v1.0
-      with:
-       tag_name: continuous
-       github_token: ${{ secrets.GITHUB_TOKEN }}
-       delete_release: true
+        
+  release:
+      needs: [build]
+      permissions: write-all
+      runs-on: ubuntu-latest
 
-    - uses: rickstaa/action-create-tag@v1
-      id: "tag_create"
-      with:
-        tag: "continuous"
+      steps:
+        - uses: actions/download-artifact@v1
+          with:
+            name: VirtualBox-x86_64.AppImage
 
-    - uses: softprops/action-gh-release@v1
-      with:
-        files: ./dist/*.AppImage
-        prerelease: true
-        draft: false
-        tag_name: continuous
-        name: Continuous build
+        - name: release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+            title: Continuous build
+            automatic_release_tag: continuous
+            prerelease: false
+            draft: false
+            files: |
+              VirtualBox-x86_64.AppImage
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
