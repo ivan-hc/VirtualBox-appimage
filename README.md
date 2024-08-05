@@ -1,7 +1,8 @@
 Unofficial AppImage of VirtualBox built on top of "Conty", the portable Arch Linux container that runs everywhere.
 
-| ![Istantanea_2024-07-25_06-12-17](https://github.com/user-attachments/assets/232dccb3-658d-4e0a-9d67-3f76b9324f88) |
-| - |
+| ![Istantanea_2024-08-05_21-52-01 png](https://github.com/user-attachments/assets/2b3b9741-25bd-4f77-b753-6cd46762c567) | ![Istantanea_2024-08-05_21-55-33 png](https://github.com/user-attachments/assets/4b231fd4-555a-46eb-b22b-f84a174ddcd1) | ![Istantanea_2024-08-05_21-56-39 png](https://github.com/user-attachments/assets/cf5d1029-f1e6-427e-b3e6-54cbdf3e288f) |
+| - | - | - |
+| ![Istantanea_2024-08-05_21-58-45 png](https://github.com/user-attachments/assets/1346ef50-f524-4ee7-9134-454546865d6e) | ![Istantanea_2024-08-05_21-59-41 png](https://github.com/user-attachments/assets/cadb3c0b-6e64-4a95-ba19-aaac6f65f34d) |![351956651-232dccb3-658d-4e0a-9d67-3f76b9324f88 png](https://github.com/user-attachments/assets/6eb360bd-f034-4214-b74e-aa55f01f692f) |
 
 ---------------------------------
 
