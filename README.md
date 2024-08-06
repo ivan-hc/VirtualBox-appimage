@@ -1,6 +1,6 @@
 Unofficial AppImage of VirtualBox built on top of "Conty", the portable Arch Linux container that runs everywhere.
 
-This AppImage includes Guest Additions ISO and the Extension Pack for USB support. No other configurarions are needed!
+This AppImage includes Guest Additions ISO and the Extension Pack.
 
 NOTE, Oracle VM VirtualBox Extension Pack is released with PUEL license https://www.virtualbox.org/wiki/VirtualBox_PUEL
 
