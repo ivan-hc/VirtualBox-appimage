@@ -70,6 +70,11 @@ https://github.com/Kron4ek/Conty
 ### ◆ Very slow first startup for Nvidia users
 At the first start, if necessary, the drivers for your video card will be downloaded, via Conty (see screenshot above). This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
 
+### ◆ USB support
+Extension packs is included but USB support can't be easily integrated.
+
+See https://github.com/ivan-hc/VirtualBox-appimage/issues/7 for more.
+
 ### ◆ Shortcuts
 If you right-click on the VM to createa launcher, open the .desktop file and change the "Exec=" entry from
 ```
