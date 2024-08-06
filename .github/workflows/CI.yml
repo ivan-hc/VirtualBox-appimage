@@ -16,6 +16,8 @@ jobs:
 
     - name: build
       run: |
+        sudo apt update
+        sudo apt install desktop-file-utils
         APP=virtualbox
         wget -q https://raw.githubusercontent.com/ivan-hc/Conty/master/create-conty.sh
         wget -q https://raw.githubusercontent.com/ivan-hc/Conty/master/conty-start.sh
