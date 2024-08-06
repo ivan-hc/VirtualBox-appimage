@@ -1,8 +1,12 @@
 Unofficial AppImage of VirtualBox built on top of "Conty", the portable Arch Linux container that runs everywhere.
 
+This AppImage includes Guest Additions ISO and the Extension Pack for USB support. No other configurarions are needed!
+
+NOTE, Oracle VM VirtualBox Extension Pack is released with PUEL license https://www.virtualbox.org/wiki/VirtualBox_PUEL
+
 | ![Istantanea_2024-08-05_21-52-01 png](https://github.com/user-attachments/assets/2b3b9741-25bd-4f77-b753-6cd46762c567) | ![Istantanea_2024-08-05_21-55-33 png](https://github.com/user-attachments/assets/4b231fd4-555a-46eb-b22b-f84a174ddcd1) | ![Istantanea_2024-08-05_21-56-39 png](https://github.com/user-attachments/assets/cf5d1029-f1e6-427e-b3e6-54cbdf3e288f) |
 | - | - | - |
-| ![Istantanea_2024-08-05_21-58-45 png](https://github.com/user-attachments/assets/1346ef50-f524-4ee7-9134-454546865d6e) | ![Istantanea_2024-08-05_21-59-41 png](https://github.com/user-attachments/assets/cadb3c0b-6e64-4a95-ba19-aaac6f65f34d) |![351956651-232dccb3-658d-4e0a-9d67-3f76b9324f88 png](https://github.com/user-attachments/assets/6eb360bd-f034-4214-b74e-aa55f01f692f) |
+| ![Istantanea_2024-08-05_21-58-45 png](https://github.com/user-attachments/assets/1346ef50-f524-4ee7-9134-454546865d6e) | ![Istantanea_2024-08-05_21-59-41 png](https://github.com/user-attachments/assets/cadb3c0b-6e64-4a95-ba19-aaac6f65f34d) | ![Istantanea_2024-08-06_17-17-21 png](https://github.com/user-attachments/assets/8ff8a8db-5b92-4e55-b4cd-5aaa191e204a) |
 
 ---------------------------------
 
@@ -65,11 +69,6 @@ https://github.com/Kron4ek/Conty
 
 ### ◆ Very slow first startup for Nvidia users
 At the first start, if necessary, the drivers for your video card will be downloaded, via Conty (see screenshot above). This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
-
-### ◆ USB support and extension pack
-Installation of extension packs is not supported and they can't be easily integrated, since VirtualBox KVM is diffeerent from upstream VirtualBox.
-
-To use USB pass-through, see https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through
 
 ### ◆ Shortcuts
 If you right-click on the VM to createa launcher, open the .desktop file and change the "Exec=" entry from
