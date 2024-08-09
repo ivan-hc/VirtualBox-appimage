@@ -51,15 +51,79 @@ cat >> ./AppRun << 'EOF'
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
 export UNION_PRELOAD="${HERE}"
+
+Show_help_message() {
+	printf " Available options:\n"
+	printf "\n  --vbox-usb-enable\n"
+	printf "\n	Enable USB support in Virtual Machines. Requires \"sudo\" password.\n"
+	printf "\n	The above option does the following:\n"
+	printf "\n	- Creates the \"vboxusers\" group"
+	printf "\n	- Adds your \$USER to the \"vboxusers\" group"
+	printf "\n	- Creates the /usr/lib/virtualbox directory on the host system"
+	printf "\n	- Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
+	printf "\n	- Creates the /etc/udev/rules.d directory"
+	printf "\n	- Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
+	printf "\n  VirtualBoxVM\n"
+	printf "\n	A VirtualBox command to handle Virtual Machines via command line\n\n"
+}
+
+VBoxUSB_enable() {
+	printf "\n The above option does the following:\n"
+	printf "\n - Creates the \"vboxusers\" group"
+	printf "\n - Adds your \$USER to the \"vboxusers\" group"
+	printf "\n - Creates the /usr/lib/virtualbox directory on the host system"
+	printf "\n - Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
+	printf "\n - Creates the /etc/udev/rules.d directory"
+	printf "\n - Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
+	printf "\n See also https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through\n"
+	printf "\nAuthentication is required\n"
+	if ! test -f /usr/lib/virtualbox/VBoxCreateUSBNode.sh; then
+		# Create the "vboxusers" group and add $USER
+		sudo groupadd -r vboxusers -U "$USER" 
+		# Create the directory /usr/lib/virtualbox on the host system
+		sudo mkdir -p /usr/lib/virtualbox
+		# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
+		QUIET_MODE=1 NVIDIA_HANDLER=0 "${HERE}"/conty.sh cp /usr/share/virtualbox/VBoxCreateUSBNode.sh ./
+		chmod a+x VBoxCreateUSBNode.sh
+		sudo mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
+		sudo chown -R root:vboxusers /usr/lib/virtualbox
+	fi
+	if ! test -f /etc/udev/rules.d/60-vboxusb.rules; then
+		# Create the directory /etc/udev/rules.d
+		sudo mkdir -p /etc/udev/rules.d
+		# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
+		cat <<-'HEREDOC' >> ./60-vboxusb.rules
+		SUBSYSTEM=="usb_device", ACTION=="add", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
+		SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
+		SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
+		SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
+		HEREDOC
+		sudo mv 60-vboxusb.rules /etc/udev/rules.d/
+		# Reload the udev rules
+		sudo systemctl reload systemd-udevd
+	fi
+	printf "\nIt is recommended that you reboot for the changes to take effect.\n"
+}
+
 case "$1" in
-	'') "${HERE}"/conty.sh virtualbox;;
-	'VirtualBoxVM') "${HERE}"/conty.sh "$1" "$@";;
-	'-h'|'--help') echo " Available commands:
-	- VirtualBoxVM
-	";;
-	'-v'|'--version') echo "VirtualBox VERSION KVM";;
-	'virtualbox'|*) "${HERE}"/conty.sh VirtualBox "$@";;
-esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig\|^$"
+	'')
+		"${HERE}"/conty.sh virtualbox
+		;;
+	'VirtualBoxVM')
+		"${HERE}"/conty.sh "$1" "$@"
+		;;
+	'-h'|'--help')
+		Show_help_message
+		;;
+	'--vbox-usb-enable')
+		VBoxUSB_enable
+		;;
+	'-v'|'--version')
+		echo "VirtualBox VERSION KVM"
+		;;
+	'virtualbox'|*) "${HERE}"/conty.sh VirtualBox "$@"
+	;;
+esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig""
 EOF
 chmod a+x ./AppRun
 sed -i "s/VERSION/$VERSION/g" ./AppRun
@@ -80,6 +144,5 @@ fi
 cd .. || exit 1
 
 # EXPORT THE APPDIR TO AN APPIMAGE
-ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 1 ./"$APP".AppDir VirtualBox-KVM-"$VERSION"-MUI-x86_64.AppImage
+ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 1 ./"$APP".AppDir VirtualBox-KVM-"$VERSION"-MUI-and-USB-support-x86_64.AppImage
 cd .. && mv ./tmp/*.AppImage ./ || exit 1
-
