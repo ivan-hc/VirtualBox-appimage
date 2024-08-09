@@ -79,6 +79,8 @@ Alternativelly you can follow the guide at https://github.com/cyberus-technology
 
 NOTE: the function above extracts the "VBoxCreateUSBNode.sh" from the internal Conty build, if you want to do it manually, you can download any VirtualBox package and check for "VBoxCreateUSBNode.sh" and made it executable. You can also extract it from the AppImage when it is mounted, in /tmp/conty_*/mnt/usr/share/virtualbox.
 
+See also https://github.com/ivan-hc/VirtualBox-appimage/issues/7
+
 ---------------------------------
 
 ### How to build it
