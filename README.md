@@ -29,6 +29,58 @@ Also, this VirtualBox AppImage does not require "vboxdrv", being it based on Vir
 
 ---------------------------------
 
+### USB support
+
+According with [this guide](https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through), to enable the USB support **we need to handle some files using root permissions**:
+1. we need to add the "VBoxCreateUSBNode.sh" of VirtualBox into a /usr/lib/virtualbox directory on the host
+2. we need to create the "vboxusers" group and add our $USER in that group
+3. we need to add the "60-vboxusb.rules" file to /etc/udev/rules.d and then we need to reload these rules
+
+I have resumed all these steps into one function available in the AppRun script of the AppImage, name of the function is "VBoxUSB_enable".
+
+To enable the USB support you must run the following command:
+```
+./*.AppImage --vbox-usb-enable
+```
+this is the message that will appear, you need to enter the "sudo" password
+![Istantanea_2024-08-09_21-29-31](https://github.com/user-attachments/assets/8781e646-d151-4ddd-a61b-974284a3e780)
+
+these are the commands included in this function:
+```
+# Create the "vboxusers" group and add $USER
+sudo groupadd -r vboxusers -U "$USER"
+
+# Create the directory /usr/lib/virtualbox on the host system
+sudo mkdir -p /usr/lib/virtualbox
+
+# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
+QUIET_MODE=1 NVIDIA_HANDLER=0 "${HERE}"/conty.sh cp /usr/share/virtualbox/VBoxCreateUSBNode.sh ./
+chmod a+x VBoxCreateUSBNode.sh
+sudo mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
+sudo chown -R root:vboxusers /usr/lib/virtualbox
+
+# Create the directory /etc/udev/rules.d
+sudo mkdir -p /etc/udev/rules.d
+
+# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
+cat <<-'HEREDOC' >> ./60-vboxusb.rules
+SUBSYSTEM=="usb_device", ACTION=="add", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
+SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
+SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
+SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
+HEREDOC
+sudo mv 60-vboxusb.rules /etc/udev/rules.d/
+
+# Reload the udev rules
+sudo systemctl reload systemd-udevd
+```
+
+Alternativelly you can follow the guide at https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through and enable the USB support manually.
+
+NOTE: the function above extracts the "VBoxCreateUSBNode.sh" from the internal Conty build, if you want to do it manually, you can download any VirtualBox package and check for "VBoxCreateUSBNode.sh" and made it executable. You can also extract it from the AppImage when it is mounted, in /tmp/conty_*/mnt/usr/share/virtualbox.
+
+---------------------------------
+
 ### How to build it
 
 Currently, the AppImage I produced contains the following structure:
@@ -69,11 +121,6 @@ https://github.com/Kron4ek/Conty
 
 ### ◆ Very slow first startup for Nvidia users
 At the first start, if necessary, the drivers for your video card will be downloaded, via Conty (see screenshot above). This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
-
-### ◆ USB support
-Extension packs is included but USB support can't be easily integrated.
-
-See https://github.com/ivan-hc/VirtualBox-appimage/issues/7 for more.
 
 ### ◆ Shortcuts
 If you right-click on the VM to createa launcher, open the .desktop file and change the "Exec=" entry from
