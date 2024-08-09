@@ -383,9 +383,6 @@ run_in_chroot sed -i 's/LANG=${LANG:-C}/LANG=$LANG/g' /etc/profile.d/locale.sh
 mkdir -p "${bootstrap}"/usr/lib/virtualbox/nls
 rsync -av "${bootstrap}"/usr/share/virtualbox/nls/* "${bootstrap}"/usr/lib/virtualbox/nls/
 
-# Copy scripts from /usr/share/virtualbox to /usr/lib/virtualbox
-rsync -av "${bootstrap}"/usr/share/virtualbox/VBox* "${bootstrap}"/usr/lib/virtualbox/
-
 # Add guest additions
 vboxver=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
 wget https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso -O ./VBoxGuestAdditions.iso || exit 1
