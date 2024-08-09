@@ -123,7 +123,7 @@ case "$1" in
 		;;
 	'virtualbox'|*) "${HERE}"/conty.sh VirtualBox "$@"
 	;;
-esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig""
+esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig"
 EOF
 chmod a+x ./AppRun
 sed -i "s/VERSION/$VERSION/g" ./AppRun
