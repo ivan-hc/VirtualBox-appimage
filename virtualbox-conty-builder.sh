@@ -146,5 +146,5 @@ cd .. || exit 1
 # EXPORT THE APPDIR TO AN APPIMAGE
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 1 \
 	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|VirtualBox-appimage|continuous|*x86_64.AppImage.zsync" \
-	./"$APP".AppDir VirtualBox-KVM-"$VERSION"-"$ARCH".AppImage
+	./"$APP".AppDir VirtualBox-KVM-"$VERSION"-x86_64.AppImage
 cd .. && mv ./tmp/*.AppImage ./ || exit 1
