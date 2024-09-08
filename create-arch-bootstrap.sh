@@ -411,13 +411,17 @@ run_in_chroot rm -Rf /usr/include /usr/share/man
 run_in_chroot bash -c 'find "${bootstrap}"/usr/share/doc/* -not -iname "*virtualbox*" -a -not -name "." -delete'
 run_in_chroot bash -c 'find "${bootstrap}"/usr/share/locale/*/*/* -not -iname "*virtualbox*" -a -not -name "." -delete'
 rm -rf "${bootstrap}"/usr/lib/*.a
+rm -rf "${bootstrap}"/usr/lib/bellagio
+rm -rf "${bootstrap}"/usr/lib/cmake/Qt*
 #rm -rf "${bootstrap}"/usr/lib/libgallium*
 rm -rf "${bootstrap}"/usr/lib/libgo.so*
 rm -rf "${bootstrap}"/usr/lib/libgphobos.so*
 #rm -rf "${bootstrap}"/usr/lib/libLLVM*
 rm -rf "${bootstrap}"/usr/lib/systemd
-rm -rf "${bootstrap}"/usr/share/info
+rm -rf "${bootstrap}"/usr/share/fonts/*
 rm -rf "${bootstrap}"/usr/share/gir-1.0
+rm -rf "${bootstrap}"/usr/share/i18n
+rm -rf "${bootstrap}"/usr/share/info
 rm -rf "${bootstrap}"/var/lib/pacman/*
 strip --strip-debug "${bootstrap}"/usr/lib/*
 strip --strip-debug "${bootstrap}"/usr/lib32/*
