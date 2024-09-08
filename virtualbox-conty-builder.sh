@@ -105,12 +105,14 @@ VBoxUSB_enable() {
 	printf "\nIt is recommended that you reboot for the changes to take effect.\n"
 }
 
+CONTY_CMD="${HERE}/conty.sh --bind-try /usr/share/fonts /usr/share/fonts"
+
 case "$1" in
 	'')
-		"${HERE}"/conty.sh virtualbox
+		$CONTY_CMD virtualbox
 		;;
 	'VirtualBoxVM')
-		"${HERE}"/conty.sh "$1" "$@"
+		$CONTY_CMD "$1" "$@"
 		;;
 	'-h'|'--help')
 		Show_help_message
@@ -121,9 +123,9 @@ case "$1" in
 	'-v'|'--version')
 		echo "VirtualBox VERSION KVM"
 		;;
-	'virtualbox'|*) "${HERE}"/conty.sh VirtualBox "$@"
+	'virtualbox'|*) $CONTY_CMD VirtualBox "$@"
 	;;
-esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig"
+esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig\|Running Conty" | cat -s
 EOF
 chmod a+x ./AppRun
 sed -i "s/VERSION/$VERSION/g" ./AppRun
