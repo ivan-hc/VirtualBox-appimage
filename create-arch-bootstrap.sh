@@ -369,6 +369,9 @@ fi
 # Remove unneeded packages
 run_in_chroot pacman --noconfirm -Rsudd base-devel meson mingw-w64-gcc cmake gcc
 run_in_chroot pacman --noconfirm -Rdd wine-staging
+run_in_chroot pacman --noconfirm -Rsndd gcc yay pacman systemd
+run_in_chroot pacman -Qdtq | run_in_chroot pacman --noconfirm -Rsn -
+run_in_chroot pacman --noconfirm -Rsndd pacman
 run_in_chroot pacman -Qdtq | run_in_chroot pacman --noconfirm -Rsn -
 run_in_chroot pacman --noconfirm -Scc
 
@@ -412,6 +415,13 @@ rm -rf "${bootstrap}"/usr/lib/*.a
 rm -rf "${bootstrap}"/usr/lib/libgo.so*
 rm -rf "${bootstrap}"/usr/lib/libgphobos.so*
 #rm -rf "${bootstrap}"/usr/lib/libLLVM*
+rm -rf "${bootstrap}"/usr/lib/systemd
+rm -rf "${bootstrap}"/usr/share/info
+rm -rf "${bootstrap}"/usr/share/gir-1.0
+rm -rf "${bootstrap}"/var/lib/pacman/*
+strip --strip-debug "${bootstrap}"/usr/lib/*
+strip --strip-debug "${bootstrap}"/usr/lib32/*
+strip --strip-unneeded "${bootstrap}"/usr/bin/*
 
 # Check if the command we are interested in has been installed
 if ! run_in_chroot which virtualbox; then echo "Command not found, exiting." && exit 1; fi
