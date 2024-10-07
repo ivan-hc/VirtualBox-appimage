@@ -5,7 +5,9 @@ APP=virtualbox-kvm
 BIN="virtualbox"
 QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD  | tr '"><' '\n' | sed "s/'/\n/g" | grep "^qt.*base$" | head -1)
 [ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct qt5-svg kwindowsystem5" || kvantumver="kvantum qt6ct"
-DEPENDENCES="ca-certificates alsa-lib alsa-plugins libpulse jack2 alsa-tools alsa-utils pipewire \
+DEPENDENCES="ca-certificates alsa-lib alsa-plugins libpulse jack2 jack2-dbus dbus alsa-tools alsa-utils \
+	pulseaudio pulseaudio-alsa pulseaudio-jack \
+	pipewire pipewire-alsa pipewire-pulse pipewire-audio \
 	libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils \
 	$kvantumver libva sdl2 vulkan-icd-loader numactl"
 BASICSTUFF="binutils debugedit gzip"
@@ -288,7 +290,7 @@ function _create_AppRun() {
 		;;
 	'virtualbox'|*) $HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBox "$@"
 		;;
-	esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig" | cat -s
+	esac
 	HEREDOC
 	chmod a+x ./AppRun
 	sed -i "s/VERSION/$VERSION/g" ./AppRun
@@ -408,7 +410,7 @@ echo ""
 
 # SAVE FILES USING KEYWORDS
 BINSAVED="certificates readlink kmod lsmod grep uname cat whoami gawk awk basename" # Enter here keywords to find and save in /usr/bin
-SHARESAVED="certificates SAVESHAREPLEASE" # Enter here keywords or file/directory names to save in both /usr/share and /usr/lib
+SHARESAVED="certificates alsa" # Enter here keywords or file/directory names to save in both /usr/share and /usr/lib
 lib_browser_launcher="gio-launch-desktop libdl.so libpthread.so librt.so libasound.so libX11-xcb.so" # Libraries and files needed to launche the default browser
 LIBSAVED="pk p11 alsa jack pipewire pulse libmpfr libGLX libxcb-res $lib_browser_launcher" # Enter here keywords or file/directory names to save in /usr/lib
 
@@ -601,10 +603,12 @@ if ! test -f ./Extension_Pack.tar; then
 	tar xfC ./Extension_Pack.tar shrunk
 	rm -r shrunk/{darwin*,solaris*,win*}
 	tar -c --gzip --file shrunk.vbox-extpack -C shrunk .
-	install -Dm 644 shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${VERSION}".vbox-extpack
-	install -Dm 644 shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
-	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/linux.amd64
-	install -Dm 644 shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/
+	mkdir -p ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions
+	cp shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${VERSION}".vbox-extpack
+	mkdir -p ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/
+	cp shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
+	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack
+	rsync -av shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/
 fi
 
 _rsync_main_package
