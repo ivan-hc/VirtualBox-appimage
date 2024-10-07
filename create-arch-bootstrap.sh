@@ -28,6 +28,9 @@ wine_pkgs="libpng gnutls openal \
 
 devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 
+QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD  | tr '"><' '\n' | sed "s/'/\n/g" | grep "^qt.*base$" | head -1)
+[ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct qt5-svg kwindowsystem5" || kvantumver="kvantum qt6ct"
+
 # Packages to install
 # You can add packages that you want and remove packages that you don't need
 # Apart from packages from the official Arch repos, you can also specify
@@ -35,7 +38,7 @@ devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 export packagelist="${audio_pkgs} libpng gnutls openal \
 	which ttf-dejavu ttf-liberation xorg-xwayland wayland \
 	xorg-server xorg-apps curl virtualbox-kvm v4l-utils \
- 	kvantum kvantum-qt5 qt5ct qt6ct libva sdl2 vulkan-icd-loader"
+ 	$kvantumver libva sdl2 vulkan-icd-loader"
 
 # If you want to install AUR packages, specify them in this variable
 export aur_packagelist=""
@@ -442,6 +445,7 @@ rm -f "${bootstrap}"/var/cache/pacman/pkg/*
 # later in the conty-start.sh script
 mkdir "${bootstrap}"/media
 mkdir -p "${bootstrap}"/usr/share/steam/compatibilitytools.d
+mkdir -p "${bootstrap}"/usr/share/Kvantum
 touch "${bootstrap}"/etc/asound.conf
 touch "${bootstrap}"/etc/localtime
 chmod 755 "${bootstrap}"/root
