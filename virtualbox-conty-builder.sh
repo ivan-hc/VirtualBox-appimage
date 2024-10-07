@@ -105,7 +105,7 @@ VBoxUSB_enable() {
 	printf "\nIt is recommended that you reboot for the changes to take effect.\n"
 }
 
-CONTY_CMD="${HERE}/conty.sh --bind-try /usr/share/fonts /usr/share/fonts"
+CONTY_CMD="${HERE}/conty.sh --bind-try /usr/share/fonts /usr/share/fonts --bind-try /usr/share/Kvantum /usr/share/Kvantum"
 
 case "$1" in
 	'')
