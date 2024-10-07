@@ -29,7 +29,7 @@ wine_pkgs="libpng gnutls openal \
 devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
 
 QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD  | tr '"><' '\n' | sed "s/'/\n/g" | grep "^qt.*base$" | head -1)
-[ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct qt5-svg kwindowsystem5" || kvantumver="kvantum qt6ct"
+[ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct" || kvantumver="kvantum qt6ct"
 
 # Packages to install
 # You can add packages that you want and remove packages that you don't need
@@ -425,8 +425,15 @@ rm -rf "${bootstrap}"/usr/share/fonts/*
 rm -rf "${bootstrap}"/usr/share/gir-1.0
 rm -rf "${bootstrap}"/usr/share/i18n
 rm -rf "${bootstrap}"/usr/share/info
+rm -rf "${bootstrap}"/usr/share/virtualbox/nls
+[ "$QTVER" = qt5-base ] && rm -rf "${bootstrap}"/usr/share/qt6 && rm -rf "${bootstrap}"/usr/share/Kvantum/*
 rm -rf "${bootstrap}"/var/lib/pacman/*
+rm -rf "${bootstrap}"/usr/lib/python*/__pycache__/*
 strip --strip-debug "${bootstrap}"/usr/lib/*
+strip --strip-debug "${bootstrap}"/usr/lib/*/*
+strip --strip-debug "${bootstrap}"/usr/lib/*/*/*
+strip --strip-debug "${bootstrap}"/usr/lib/*/*/*/*
+strip --strip-debug "${bootstrap}"/usr/lib/*/*/*/*/*
 strip --strip-debug "${bootstrap}"/usr/lib32/*
 strip --strip-unneeded "${bootstrap}"/usr/bin/*
 
