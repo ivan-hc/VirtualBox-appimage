@@ -401,13 +401,12 @@ mkdir -p shrunk
 tar xfC ./Extension_Pack.tar shrunk
 rm -r shrunk/{darwin*,solaris*,win*}
 tar -c --gzip --file shrunk.vbox-extpack -C shrunk .
-install -Dm 644 shrunk.vbox-extpack \
-	"${bootstrap}"/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
-install -Dm 644 shrunk/ExtPack-license.txt \
-	"${bootstrap}"/usr/share/licenses/virtualbox-ext-oracle/PUEL
-mkdir -p "${bootstrap}"/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/linux.amd64
-install -Dm 644 shrunk/linux.amd64/* \
-	"${bootstrap}"/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/linux.amd64/
+mkdir -p "${bootstrap}"/usr/share/virtualbox/extensions
+cp shrunk.vbox-extpack "${bootstrap}"/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
+mkdir -p "${bootstrap}"/usr/share/licenses/virtualbox-ext-oracle/
+cp shrunk/ExtPack-license.txt "${bootstrap}"/usr/share/licenses/virtualbox-ext-oracle/PUEL
+mkdir -p "${bootstrap}"/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack
+rsync -av shrunk/* "${bootstrap}"/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/
 
 # Remove bloatwares
 run_in_chroot rm -Rf /usr/include /usr/share/man
