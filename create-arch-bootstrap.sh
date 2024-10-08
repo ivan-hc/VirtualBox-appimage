@@ -427,7 +427,7 @@ rm -rf "${bootstrap}"/usr/share/i18n
 rm -rf "${bootstrap}"/usr/share/info
 rm -rf "${bootstrap}"/usr/share/virtualbox/nls
 [ "$QTVER" = qt5-base ] && rm -rf "${bootstrap}"/usr/share/qt6 && rm -rf "${bootstrap}"/usr/share/Kvantum/* \
-	&& rm -rf "${bootstrap}"/usr/lib/qt6 && rm -rf "${bootstrap}"/usr/share/*Qt6*
+	&& rm -rf "${bootstrap}"/usr/lib/qt6 && rm -rf "${bootstrap}"/usr/share/libQt6*
 rm -rf "${bootstrap}"/var/lib/pacman/*
 rm -rf "${bootstrap}"/usr/lib/python*/__pycache__/*
 strip --strip-debug "${bootstrap}"/usr/lib/*
