@@ -379,6 +379,12 @@ if ! run_in_chroot which virtualbox; then echo "Command not found, exiting." && 
 rm -rf "${bootstrap}"/home/aur
 unmount_chroot
 
+# Use the patched bwrap to allow launching AppImages from conty
+echo "Using patched bubblewrap..."
+rm -f "${bootstrap}"/usr/bin/bwrap
+wget "https://bin.ajam.dev/x86_64_Linux/bwrap-patched" -O "${bootstrap}"/usr/bin/bwrap || exit 1
+chmod +x "${bootstrap}"/usr/bin/bwrap || exit 1
+
 # Clear pacman package cache
 rm -f "${bootstrap}"/var/cache/pacman/pkg/*
 
