@@ -6,28 +6,6 @@
 ########################################################################
 
 # Package groups
-audio_pkgs="alsa-lib alsa-plugins libpulse \
-	jack2 alsa-tools alsa-utils pipewire"
-
-video_pkgs="mesa vulkan-radeon \
-	vulkan-intel \
-	vulkan-icd-loader vulkan-mesa-layers \
-	libva-mesa-driver \
-	libva-intel-driver intel-media-driver \
-	mesa-utils vulkan-tools libva-utils"
-
-wine_pkgs="libpng gnutls openal \
-	v4l-utils libpulse alsa-plugins \
-	alsa-lib libjpeg-turbo \
-	libxcomposite \
-	libva wget \
-	vulkan-icd-loader sdl2 \
-	vkd3d ffmpeg gst-plugins-good gst-plugins-bad \
-	gst-plugins-ugly gst-plugins-base \
-	gst-libav wget gst-plugin-pipewire"
-
-devel_pkgs="base-devel git meson mingw-w64-gcc cmake gtk3"
-
 QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD  | tr '"><' '\n' | sed "s/'/\n/g" | grep "^qt.*base$" | head -1)
 [ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct" || kvantumver="kvantum qt6ct"
 
@@ -35,10 +13,9 @@ QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-
 # You can add packages that you want and remove packages that you don't need
 # Apart from packages from the official Arch repos, you can also specify
 # packages from the Chaotic-AUR repo
-export packagelist="${audio_pkgs} libpng gnutls openal \
-	which ttf-dejavu ttf-liberation xorg-xwayland wayland \
-	xorg-server xorg-apps curl virtualbox-kvm v4l-utils \
- 	$kvantumver libva sdl2 vulkan-icd-loader"
+export packagelist="alsa-lib alsa-plugins libpulse jack2 alsa-tools alsa-utils pipewire \
+	libpng gnutls openal which xorg-xwayland wayland xorg-server xorg-apps \
+ 	curl virtualbox-kvm v4l-utils $kvantumver libva sdl2"
 
 # If you want to install AUR packages, specify them in this variable
 export aur_packagelist=""
@@ -171,36 +148,6 @@ install_aur_packages () {
 	done
 }
 
-generate_localegen () {
-	cat <<EOF > locale.gen
-ar_EG.UTF-8 UTF-8
-en_US.UTF-8 UTF-8
-en_GB.UTF-8 UTF-8
-en_CA.UTF-8 UTF-8
-en_SG.UTF-8 UTF-8
-es_MX.UTF-8 UTF-8
-zh_CN.UTF-8 UTF-8
-fr_FR.UTF-8 UTF-8
-ru_RU.UTF-8 UTF-8
-ru_UA.UTF-8 UTF-8
-es_ES.UTF-8 UTF-8
-de_DE.UTF-8 UTF-8
-pt_BR.UTF-8 UTF-8
-it_IT.UTF-8 UTF-8
-id_ID.UTF-8 UTF-8
-ja_JP.UTF-8 UTF-8
-bg_BG.UTF-8 UTF-8
-pl_PL.UTF-8 UTF-8
-da_DK.UTF-8 UTF-8
-ko_KR.UTF-8 UTF-8
-tr_TR.UTF-8 UTF-8
-hu_HU.UTF-8 UTF-8
-cs_CZ.UTF-8 UTF-8
-bn_IN UTF-8
-hi_IN UTF-8
-EOF
-}
-
 generate_mirrorlist () {
 	cat <<EOF > mirrorlist
 Server = https://mirror1.sl-chat.ru/archlinux/\$repo/os/\$arch
@@ -266,8 +213,6 @@ rm archlinux-bootstrap-x86_64.tar.zst sha256sums.txt sha256.txt
 
 mount_chroot
 
-#generate_localegen
-
 if command -v reflector 1>/dev/null; then
 	echo "Generating mirrorlist..."
 	reflector --connection-timeout 10 --download-timeout 10 --protocol https --score 10 --sort rate --save mirrorlist
@@ -275,9 +220,6 @@ if command -v reflector 1>/dev/null; then
 else
 	generate_mirrorlist
 fi
-
-#rm "${bootstrap}"/etc/locale.gen
-#mv locale.gen "${bootstrap}"/etc/locale.gen
 
 rm "${bootstrap}"/etc/pacman.d/mirrorlist
 mv mirrorlist "${bootstrap}"/etc/pacman.d/mirrorlist
@@ -364,10 +306,7 @@ if [ -n "${aur_packagelist}" ]; then
 	export -f install_aur_packages
 	CHROOT_AUR=1 HOME=/home/aur run_in_chroot bash -c install_aur_packages
 	mv "${bootstrap}"/home/aur/bad_aur_pkglist.txt "${bootstrap}"/opt
-	#rm -rf "${bootstrap}"/home/aur
 fi
-
-#run_in_chroot locale-gen
 
 # Remove unneeded packages
 run_in_chroot pacman --noconfirm -Rsudd base-devel meson mingw-w64-gcc cmake gcc
