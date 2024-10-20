@@ -396,6 +396,7 @@ rm -f "${bootstrap}"/var/cache/pacman/pkg/*
 # This is needed for bubblewrap to be able to bind real files/dirs to them
 # later in the conty-start.sh script
 mkdir "${bootstrap}"/media
+mkdir -p "${bootstrap}"/usr/share/fonts
 mkdir -p "${bootstrap}"/usr/share/steam/compatibilitytools.d
 mkdir -p "${bootstrap}"/usr/share/Kvantum
 touch "${bootstrap}"/etc/asound.conf
