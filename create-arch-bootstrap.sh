@@ -11,8 +11,7 @@ QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-
 
 audio_pkgs="alsa-lib alsa-plugins libpulse jack2 alsa-tools alsa-utils pipewire "
 
-video_pkgs="mesa vulkan-radeon vulkan-intel vulkan-icd-loader vulkan-mesa-layers \
-	libva-mesa-driver libva-intel-driver intel-media-driver"
+video_pkgs="mesa vulkan-icd-loader vulkan-mesa-layers libva-mesa-driver"
 
 # Packages to install
 # You can add packages that you want and remove packages that you don't need
