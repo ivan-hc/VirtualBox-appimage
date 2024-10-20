@@ -109,10 +109,10 @@ CONTY_CMD="${HERE}/conty.sh --bind-try /usr/share/Kvantum /usr/share/Kvantum"
 
 case "$1" in
 	'')
-		$CONTY_CMD virtualbox
+		$CONTY_CMD -- virtualbox
 		;;
 	'VirtualBoxVM')
-		$CONTY_CMD "$1" "$@"
+		$CONTY_CMD -- VirtualBoxVM "$@"
 		;;
 	'-h'|'--help')
 		Show_help_message
@@ -123,7 +123,7 @@ case "$1" in
 	'-v'|'--version')
 		echo "VirtualBox VERSION KVM"
 		;;
-	'virtualbox'|*) $CONTY_CMD VirtualBox "$@"
+	'virtualbox'|*) $CONTY_CMD -- VirtualBox "$@"
 	;;
 esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig\|Running Conty" | cat -s
 EOF
