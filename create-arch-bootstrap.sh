@@ -7,7 +7,7 @@
 
 # Package groups
 QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD  | tr '"><' '\n' | sed "s/'/\n/g" | grep "^qt.*base$" | head -1)
-[ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct" || kvantumver="kvantum qt6ct"
+[ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct qt5-wayland" || kvantumver="kvantum qt6ct qt6-wayland"
 
 audio_pkgs="alsa-lib alsa-plugins libpulse jack2 alsa-tools alsa-utils pipewire "
 
