@@ -3,16 +3,11 @@
 # NAME OF THE APP BY REPLACING "SAMPLE"
 APP=virtualbox-kvm
 BIN="virtualbox"
-QTVER=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD  | tr '"><' '\n' | sed "s/'/\n/g" | grep "^qt.*base$" | head -1)
-[ "$QTVER" = qt5-base ] && kvantumver="kvantum-qt5 qt5ct qt5-svg kwindowsystem5" || kvantumver="kvantum qt6ct"
-DEPENDENCES="ca-certificates alsa-lib alsa-plugins libpulse jack2 jack2-dbus dbus alsa-tools alsa-utils \
-	pulseaudio pulseaudio-alsa pulseaudio-jack \
-	pipewire pipewire-alsa pipewire-pulse pipewire-audio \
-	libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils \
-	$kvantumver libva sdl2 vulkan-icd-loader numactl"
+DEPENDENCES="ca-certificates alsa-lib alsa-plugins libpulse jack2 alsa-tools alsa-utils pipewire libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils libva sdl2 kvantum qt6ct qt6-wayland mesa vulkan-icd-loader vulkan-mesa-layers libva-mesa-driver"
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
-VERSION=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
+
+vboxver=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
 
 # CREATE AND ENTER THE APPDIR
 if ! test -f ./appimagetool; then
@@ -158,9 +153,19 @@ function _add_launcher_and_icon() {
 	rm -R -f ./*.desktop
 	LAUNCHER=$(grep -iRl $BIN ./.junest/usr/share/applications/* | grep ".desktop" | head -1)
 	cp -r "$LAUNCHER" ./
-	if ! test -f ./*.png; then
-		wget -q https://upload.wikimedia.org/wikipedia/commons/d/d5/Virtualbox_logo.png -O virtualbox.png
-	fi
+	ICON="virtualbox.png"
+	cp -r ./.junest/usr/share/icons/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/22x22/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/24x24/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/32x32/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/48x48/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/64x64/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/128x128/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/192x192/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/256x256/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/512x512/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/icons/hicolor/scalable/mimetypes/*"$ICON"* ./ 2>/dev/null
+	cp -r ./.junest/usr/share/pixmaps/*"$ICON"* ./ 2>/dev/null
 
 	# test if the desktop file and the icon are in the root of the future appimage (./*appdir/*)
 	if test -f ./*.desktop; then
@@ -199,6 +204,12 @@ function _create_AppRun() {
 	export JUNEST_HOME=$HERE/.junest
 	export PATH=$PATH:$HERE/.local/share/junest/bin
 
+	Show_help_message() {
+		printf " Available options:\n"
+		printf "\n  VirtualBoxVM\n"
+		printf "\n	A VirtualBox command to handle Virtual Machines via command line\n\n"
+	}
+
 	BINDS=" --dev-bind /dev /dev \
 		--ro-bind /sys /sys \
 		--bind-try /tmp /tmp \
@@ -214,86 +225,34 @@ function _create_AppRun() {
 		--bind-try /media /media \
 		--bind-try /mnt /mnt \
 		--bind-try /opt /opt \
+ 		--bind-try /run/media /run/media \
 		--bind-try /usr/lib/locale /usr/lib/locale \
 		--bind-try /usr/share/fonts /usr/share/fonts \
-		--bind-try /usr/share/Kvantum /usr/share/Kvantum \
 		--bind-try /usr/share/themes /usr/share/themes \
 		--bind-try /var /var \
 		"
 
-	Show_help_message() {
-		printf " Available options:\n"
-		printf "\n  --vbox-usb-enable\n"
-		printf "\n	Enable USB support in Virtual Machines. Requires \"sudo\" password.\n"
-		printf "\n	The above option does the following:\n"
-		printf "\n	- Creates the \"vboxusers\" group"
-		printf "\n	- Adds your \$USER to the \"vboxusers\" group"
-		printf "\n	- Creates the /usr/lib/virtualbox directory on the host system"
-		printf "\n	- Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
-		printf "\n	- Creates the /etc/udev/rules.d directory"
-		printf "\n	- Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
-		printf "\n  VirtualBoxVM\n"
-		printf "\n	A VirtualBox command to handle Virtual Machines via command line\n\n"
-	}
-
-	VBoxUSB_enable() {
-		printf "\n The above option does the following:\n"
-		printf "\n - Creates the \"vboxusers\" group"
-		printf "\n - Adds your \$USER to the \"vboxusers\" group"
-		printf "\n - Creates the /usr/lib/virtualbox directory on the host system"
-		printf "\n - Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
-		printf "\n - Creates the /etc/udev/rules.d directory"
-		printf "\n - Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
-		printf "\n See also https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through\n"
-		printf "\nAuthentication is required\n"
-		if ! test -f /usr/lib/virtualbox/VBoxCreateUSBNode.sh; then
-			# Create the "vboxusers" group and add $USER
-			sudo groupadd -r vboxusers -U "$USER" 
-			# Create the directory /usr/lib/virtualbox on the host system
-			sudo mkdir -p /usr/lib/virtualbox
-			# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
-			cp $JUNEST_HOME/usr/share/virtualbox/VBoxCreateUSBNode.sh ./
-			chmod a+x VBoxCreateUSBNode.sh
-			sudo mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
-			sudo chown -R root:vboxusers /usr/lib/virtualbox
-		fi
-		if ! test -f /etc/udev/rules.d/60-vboxusb.rules; then
-			# Create the directory /etc/udev/rules.d
-			sudo mkdir -p /etc/udev/rules.d
-			# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
-			echo 'SUBSYSTEM=="usb_device", ACTION=="add", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"' >> ./60-vboxusb.rules
-			echo 'SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"' >> ./60-vboxusb.rules
-			echo 'SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"' >> ./60-vboxusb.rules
-			echo 'SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"' >> ./60-vboxusb.rules
-			sudo mv 60-vboxusb.rules /etc/udev/rules.d/
-			# Reload the udev rules
-			sudo systemctl reload systemd-udevd
-		fi
-		printf "\nIt is recommended that you reboot for the changes to take effect.\n"
-	}
-
+	EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | sed -e 's|%.||g')
 	case "$1" in
 	'')
 		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- virtualbox
 		;;
 	'VirtualBoxVM')
-		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- "$1" "$@"
+		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBoxVM "$@"
 		;;
 	'-h'|'--help')
 		Show_help_message
 		;;
-	'--vbox-usb-enable')
-		VBoxUSB_enable
-		;;
 	'-v'|'--version')
 		echo "VirtualBox VERSION KVM"
 		;;
-	'virtualbox'|*) $HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBox "$@"
-		;;
-	esac
+	'virtualbox'|*)
+		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBox "$@"
+	;;
+	esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig" | cat -s
 	HEREDOC
 	chmod a+x ./AppRun
-	sed -i "s/VERSION/$VERSION/g" ./AppRun
+	sed -i "s/VERSION/$vboxver/g" ./AppRun
 }
 
 function _made_JuNest_a_potable_app() {
@@ -328,7 +287,7 @@ function _extract_main_package() {
 	mkdir -p base
 	rm -R -f ./base/*
 	tar fx "$(find ./"$APP".AppDir -name "$APP-[0-9]*zst" | head -1)" -C ./base/
-	#VERSION=$(cat ./base/.PKGINFO | grep pkgver | cut -c 10- | sed 's@.*:@@')
+	VERSION=$(cat ./base/.PKGINFO | grep pkgver | cut -c 10- | sed 's@.*:@@')
 	mkdir -p deps
 	rm -R -f ./deps/*
 }
@@ -409,10 +368,10 @@ echo "-----------------------------------------------------------"
 echo ""
 
 # SAVE FILES USING KEYWORDS
-BINSAVED="certificates readlink kmod lsmod grep uname cat whoami gawk awk basename" # Enter here keywords to find and save in /usr/bin
-SHARESAVED="certificates alsa" # Enter here keywords or file/directory names to save in both /usr/share and /usr/lib
+BINSAVED="certificates readlink lsmod cat grep uname whoami awk basename kmod" # Enter here keywords to find and save in /usr/bin
+SHARESAVED="certificates SAVESHAREPLEASE" # Enter here keywords or file/directory names to save in both /usr/share and /usr/lib
 lib_browser_launcher="gio-launch-desktop libdl.so libpthread.so librt.so libasound.so libX11-xcb.so" # Libraries and files needed to launche the default browser
-LIBSAVED="pk p11 alsa jack pipewire pulse libmpfr libGLX libxcb-res $lib_browser_launcher" # Enter here keywords or file/directory names to save in /usr/lib
+LIBSAVED="pk p11 alsa jack pipewire pulse SAVELIBSPLEASE $lib_browser_launcher" # Enter here keywords or file/directory names to save in /usr/lib
 
 # Save files in /usr/bin
 function _savebins() {
@@ -577,46 +536,58 @@ function _enable_mountpoints_for_the_inbuilt_bubblewrap() {
 	mkdir -p ./"$APP".AppDir/.junest/media
 	mkdir -p ./"$APP".AppDir/.junest/usr/lib/locale
 	mkdir -p ./"$APP".AppDir/.junest/usr/share/fonts
-	mkdir -p ./"$APP".AppDir/.junest/usr/share/Kvantum
 	mkdir -p ./"$APP".AppDir/.junest/usr/share/themes
+	mkdir -p ./"$APP".AppDir/.junest/run/media
 	mkdir -p ./"$APP".AppDir/.junest/run/user
 	rm -f ./"$APP".AppDir/.junest/etc/localtime && touch ./"$APP".AppDir/.junest/etc/localtime
 	[ ! -f ./"$APP".AppDir/.junest/etc/asound.conf ] && touch ./"$APP".AppDir/.junest/etc/asound.conf
 }
 
-# ADDITIONAL STEPS
-# Fix locale
-if ! test -d ./"$APP".AppDir/.junest/usr/lib/"$APP"/nls; then
-	mkdir -p mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls
-	rsync -av ./"$APP".AppDir/.junest/usr/share/virtualbox/nls/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls/
-fi
-# Add guest additions
-if ! test -f ./*.iso; then
-	wget https://download.virtualbox.org/virtualbox/"${VERSION}"/VBoxGuestAdditions_"${VERSION}".iso -O ./VBoxGuestAdditions.iso || exit 1
-	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions
-	cp VBoxGuestAdditions.iso ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/ || exit 1
-fi
-# Add extension pack
-if ! test -f ./Extension_Pack.tar; then
-	wget https://download.virtualbox.org/virtualbox/"${VERSION}"/Oracle_VM_VirtualBox_Extension_Pack-"${VERSION}".vbox-extpack -O ./Extension_Pack.tar
-	mkdir -p shrunk
-	tar xfC ./Extension_Pack.tar shrunk
-	rm -r shrunk/{darwin*,solaris*,win*}
-	tar -c --gzip --file shrunk.vbox-extpack -C shrunk .
-	mkdir -p ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions
-	cp shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${VERSION}".vbox-extpack
-	mkdir -p ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/
-	cp shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
-	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack
-	rsync -av shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/
-fi
-
 _rsync_main_package
 _rsync_dependences
 _remove_more_bloatwares
-strip --strip-debug ./$APP.AppDir/.junest/usr/lib/*
-strip --strip-unneeded ./$APP.AppDir/.junest/usr/bin/*
+find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \;
+find ./"$APP".AppDir/.junest/usr -type f -regex '.*\.so.*' -exec strip --strip-debug {} \;
+find ./"$APP".AppDir/.junest/usr/bin -type f ! -regex '.*\.so.*' -exec strip --strip-unneeded {} \;
 _enable_mountpoints_for_the_inbuilt_bubblewrap
+
+# Fix locale
+mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls
+rsync -av ./"$APP".AppDir/.junest/usr/share/virtualbox/nls/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls/
+
+# Add guest additions
+if ! test -f ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso; then
+	wget https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso -O ./VBoxGuestAdditions.iso || exit 1
+	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions
+	mv VBoxGuestAdditions.iso ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/ || exit 1
+fi
+
+# Add extension pack
+wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VM_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack -O ./Extension_Pack.tar
+mkdir -p shrunk
+tar xfC ./Extension_Pack.tar shrunk
+rm -r shrunk/{darwin*,solaris*,win*}
+tar -c --gzip --file shrunk.vbox-extpack -C shrunk .
+mkdir -p ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions
+cp shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
+mkdir -p ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/
+cp shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
+mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack
+rsync -av shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/
+
+# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
+mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox
+cp ./"$APP".AppDir/.junest/usr/share/virtualbox/VBoxCreateUSBNode.sh ./"$APP".AppDir/.junest/usr/lib/virtualbox/
+chown -R root:vboxusers ./"$APP".AppDir/.junest/usr/lib/virtualbox
+
+# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
+mkdir -p ./"$APP".AppDir/.junest/etc/udev/rules.d
+cat <<-'HEREDOC' >> ./"$APP".AppDir/.junest/etc/udev/rules.d/60-vboxusb.rules
+SUBSYSTEM=="usb_device", ACTION=="add", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
+SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
+SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
+SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
+HEREDOC
 
 # CREATE THE APPIMAGE
 if test -f ./*.AppImage; then
@@ -625,4 +596,4 @@ fi
 [ -z "$GITHUB_REPOSITORY_OWNER" ] && GITHUB_REPOSITORY_OWNER="ivan-hc"
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|VirtualBox-appimage|continuous|*x86_64.AppImage.zsync" \
-	./"$APP".AppDir "$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"-KVM_"$VERSION"-archimage3.4.4-2-x86_64.AppImage
+	./"$APP".AppDir "$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"-KVM_"$vboxver"-archimage3.4.4-2-x86_64.AppImage
