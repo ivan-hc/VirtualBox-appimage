@@ -204,10 +204,61 @@ function _create_AppRun() {
 	export JUNEST_HOME=$HERE/.junest
 	export PATH=$PATH:$HERE/.local/share/junest/bin
 
+	if command -v sudo >/dev/null 2>&1; then
+		export SUDOCMD="sudo"
+	elif command -v doas >/dev/null 2>&1; then
+		export SUDOCMD="doas"
+	else
+		echo 'ERROR: No sudo or doas found'
+		exit 1
+	fi
+
 	Show_help_message() {
 		printf " Available options:\n"
+		printf "\n  --vbox-usb-enable\n"
+		printf "\n	Enable USB support in Virtual Machines. Requires \"sudo\" password.\n"
+		printf "\n	The above option does the following:\n"
+		printf "\n	- Creates the \"vboxusers\" group"
+		printf "\n	- Adds your \$USER to the \"vboxusers\" group"
+		printf "\n	- Creates the /usr/lib/virtualbox directory on the host system"
+		printf "\n	- Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
+		printf "\n	- Creates the /etc/udev/rules.d directory"
+		printf "\n	- Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
 		printf "\n  VirtualBoxVM\n"
 		printf "\n	A VirtualBox command to handle Virtual Machines via command line\n\n"
+	}
+
+	VBoxUSB_enable() {
+		printf "\n The above option does the following:\n"
+		printf "\n - Creates the \"vboxusers\" group"
+		printf "\n - Adds your \$USER to the \"vboxusers\" group"
+		printf "\n - Creates the /usr/lib/virtualbox directory on the host system"
+		printf "\n - Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
+		printf "\n - Creates the /etc/udev/rules.d directory"
+		printf "\n - Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
+		printf "\n See also https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through\n"
+		printf "\nAuthentication is required\n"
+		if ! test -f /usr/lib/virtualbox/VBoxCreateUSBNode.sh; then
+			# Create the "vboxusers" group and add $USER
+			$SUDOCMD groupadd -r vboxusers -U "$USER" 
+			# Create the directory /usr/lib/virtualbox on the host system
+			$SUDOCMD mkdir -p /usr/lib/virtualbox
+			# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
+			"$HERE"/.local/share/junest/bin/junest -n -b "$BINDS" -- cp /usr/share/virtualbox/VBoxCreateUSBNode.sh ./
+			chmod a+x VBoxCreateUSBNode.sh
+			$SUDOCMD mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
+			$SUDOCMD chown -R root:vboxusers /usr/lib/virtualbox
+		fi
+		if ! test -f /etc/udev/rules.d/60-vboxusb.rules; then
+			# Create the directory /etc/udev/rules.d
+			$SUDOCMD mkdir -p /etc/udev/rules.d
+			# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
+			"$HERE"/.local/share/junest/bin/junest -n -b "$BINDS" -- cp /etc/udev/rules.d/60-vboxusb.rules ./
+			$SUDOCMD mv 60-vboxusb.rules /etc/udev/rules.d/
+			# Reload the udev rules
+			$SUDOCMD systemctl reload systemd-udevd
+		fi
+		printf "\nIt is recommended that you reboot for the changes to take effect.\n"
 	}
 
 	BINDS=" --dev-bind /dev /dev \
@@ -235,19 +286,22 @@ function _create_AppRun() {
 	EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | sed -e 's|%.||g')
 	case "$1" in
 	'')
-		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- virtualbox
+		"$HERE"/.local/share/junest/bin/junest -n -b "$BINDS" -- virtualbox
 		;;
 	'VirtualBoxVM')
-		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBoxVM "$@"
+		"$HERE"/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBoxVM "$@"
 		;;
 	'-h'|'--help')
 		Show_help_message
+		;;
+	'--vbox-usb-enable')
+		VBoxUSB_enable
 		;;
 	'-v'|'--version')
 		echo "VirtualBox VERSION KVM"
 		;;
 	'virtualbox'|*)
-		$HERE/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBox "$@"
+		"$HERE"/.local/share/junest/bin/junest -n -b "$BINDS" -- VirtualBox "$@"
 	;;
 	esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig" | cat -s
 	HEREDOC
@@ -383,6 +437,8 @@ function _savebins() {
 	mv ./"$APP".AppDir/.junest/usr/bin/sh ./save/
  	mv ./"$APP".AppDir/.junest/usr/bin/tr ./save/
    	mv ./"$APP".AppDir/.junest/usr/bin/tty ./save/
+ 	mv ./"$APP".AppDir/.junest/usr/bin/cp ./save/
+   	mv ./"$APP".AppDir/.junest/usr/bin/mv ./save/
 	for arg in $BINSAVED; do
 		mv ./"$APP".AppDir/.junest/usr/bin/*"$arg"* ./save/
 	done
@@ -528,6 +584,7 @@ function _remove_more_bloatwares() {
 	_remove_some_bloatwares
  	rm -R -f ./"$APP".AppDir/.junest/home # remove the inbuilt home
 	rm -R -f ./"$APP".AppDir/.junest/usr/lib/python*/__pycache__/* # if python is installed, removing this directory can save several megabytes
+	rm -R -f ./"$APP".AppDir/.junest/usr/share/man
 	#rm -R -f ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
 }
 
@@ -563,17 +620,18 @@ if ! test -f ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/VBoxGuestAddit
 fi
 
 # Add extension pack
-wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VM_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack -O ./Extension_Pack.tar
+wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
+wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack -O ./Extension_Pack.tar
 mkdir -p shrunk
 tar xfC ./Extension_Pack.tar shrunk
 rm -r shrunk/{darwin*,solaris*,win*}
 tar -c --gzip --file shrunk.vbox-extpack -C shrunk .
 mkdir -p ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions
-cp shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VM_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
+cp shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
 mkdir -p ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/
 cp shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
-mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack
-rsync -av shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VM_VirtualBox_Extension_Pack/
+mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VirtualBox_Extension_Pack
+rsync -av shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VirtualBox_Extension_Pack/
 
 # Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
 mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox
