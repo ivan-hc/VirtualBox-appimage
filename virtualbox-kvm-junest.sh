@@ -6,7 +6,7 @@ BIN="virtualbox"
 DEPENDENCES="ca-certificates dbus \
 alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils \
 libpulse pulseaudio jack2 \
-libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse \
+libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse wireplumber \
 libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils libva sdl2 \
 kvantum qt6ct qt6-wayland \
 mesa vulkan-icd-loader vulkan-mesa-layers libva-mesa-driver"
@@ -431,7 +431,7 @@ echo ""
 BINSAVED="certificates readlink lsmod cat grep uname whoami awk basename kmod" # Enter here keywords to find and save in /usr/bin
 SHARESAVED="certificates SAVESHAREPLEASE" # Enter here keywords or file/directory names to save in both /usr/share and /usr/lib
 lib_browser_launcher="gio-launch-desktop libdl.so libpthread.so librt.so libasound.so libX11-xcb.so" # Libraries and files needed to launche the default browser
-LIBSAVED="pk p11 alsa jack pipewire pulse SAVELIBSPLEASE $lib_browser_launcher" # Enter here keywords or file/directory names to save in /usr/lib
+LIBSAVED="pk p11 alsa jack pipewire pulse audioconvert $lib_browser_launcher" # Enter here keywords or file/directory names to save in /usr/lib
 
 # Save files in /usr/bin
 function _savebins() {
