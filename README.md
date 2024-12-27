@@ -17,11 +17,11 @@ NOTE, Oracle VM VirtualBox Extension Pack is released with PUEL license https://
 ```
 chmod a+x ./*.AppImage
 ```
-3. Run it, do this the first time from terminal, since the internal "Conty" script may detect if you need Nvidia drivers for your GPU
+3. Run it
 ```
 ./*.AppImage
 ```
-this may need seconds before you can use VirtualBox.
+NOTE, if you use the Conty-based release, run the first time from terminal, since the internal "Conty" script may detect if you need Nvidia drivers for your GPU (this may need seconds before you can use VirtualBox). The Junest-based release have no hardware accelleration at all.
 
 This AppImage does NOT require libfuse2, being it a new generation one.
 
@@ -45,36 +45,6 @@ To enable the USB support you must run the following command:
 this is the message that will appear, you need to enter the "sudo" password
 ![Istantanea_2024-08-09_21-29-31](https://github.com/user-attachments/assets/8781e646-d151-4ddd-a61b-974284a3e780)
 
-these are the commands included in this function:
-```
-# Create the "vboxusers" group and add $USER
-sudo groupadd -r vboxusers -U "$USER"
-
-# Create the directory /usr/lib/virtualbox on the host system
-sudo mkdir -p /usr/lib/virtualbox
-
-# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
-QUIET_MODE=1 NVIDIA_HANDLER=0 "${HERE}"/conty.sh cp /usr/share/virtualbox/VBoxCreateUSBNode.sh ./
-chmod a+x VBoxCreateUSBNode.sh
-sudo mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
-sudo chown -R root:vboxusers /usr/lib/virtualbox
-
-# Create the directory /etc/udev/rules.d
-sudo mkdir -p /etc/udev/rules.d
-
-# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
-cat <<-'HEREDOC' >> ./60-vboxusb.rules
-SUBSYSTEM=="usb_device", ACTION=="add", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
-SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh $major $minor $attr{bDeviceClass}"
-SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
-SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
-HEREDOC
-sudo mv 60-vboxusb.rules /etc/udev/rules.d/
-
-# Reload the udev rules
-sudo systemctl reload systemd-udevd
-```
-
 Alternativelly you can follow the guide at https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through and enable the USB support manually.
 
 NOTE: the function above extracts the "VBoxCreateUSBNode.sh" from the internal Arch Linux container, if you want to do it manually, you can download any VirtualBox package and check for "VBoxCreateUSBNode.sh" and made it executable. You can also extract it from the AppImage when it is mounted, in /tmp, and from builds based on JuNest its enough to extract the AppImage with `--appimage-extract` and get the script from squashfs-root/.junest/usr/share/virtualbox.
@@ -85,7 +55,7 @@ See also https://github.com/ivan-hc/VirtualBox-appimage/issues/7
 
 ### How to build the JuNest-based AppImage
 
-The latest releases are based on [JuNest](https://github.com/fsquillace/junest), it is enough tu follow the instructions on the README of the "Archimage" project, at https://github.com/ivan-hc/ArchImage and run the script https://github.com/ivan-hc/VirtualBox-appimage/blob/main/virtualbox-kvm-junest.sh into a dedicated new directory. No root mermissions are needed.
+The latest releases are based on [JuNest](https://github.com/fsquillace/junest), it is enough tu follow the instructions on the README of the "Archimage" project, at https://github.com/ivan-hc/ArchImage and run the script https://github.com/ivan-hc/VirtualBox-appimage/blob/main/virtualbox-kvm-junest.sh into a dedicated new directory. No root permissions are needed.
 
 ---------------------------------
 
