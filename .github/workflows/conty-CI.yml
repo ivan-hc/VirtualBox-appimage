@@ -1,4 +1,4 @@
-name: Release VirtualBox Appimage
+name: Release VirtualBox Appimage (Conty)
 concurrency:
   group: build-${{ github.ref }}
   cancel-in-progress: true
