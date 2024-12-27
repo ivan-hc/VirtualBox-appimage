@@ -1,4 +1,4 @@
-Unofficial AppImage of VirtualBox built on top of "Conty", the portable Arch Linux container that runs everywhere.
+Unofficial AppImage of VirtualBox built on top of "JuNest" and formerly on "Conty", the portable Arch Linux containers that runs everywhere.
 
 This AppImage includes Guest Additions ISO and the Extension Pack.
 
@@ -77,15 +77,21 @@ sudo systemctl reload systemd-udevd
 
 Alternativelly you can follow the guide at https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through and enable the USB support manually.
 
-NOTE: the function above extracts the "VBoxCreateUSBNode.sh" from the internal Conty build, if you want to do it manually, you can download any VirtualBox package and check for "VBoxCreateUSBNode.sh" and made it executable. You can also extract it from the AppImage when it is mounted, in /tmp/conty_*/mnt/usr/share/virtualbox.
+NOTE: the function above extracts the "VBoxCreateUSBNode.sh" from the internal Arch Linux container, if you want to do it manually, you can download any VirtualBox package and check for "VBoxCreateUSBNode.sh" and made it executable. You can also extract it from the AppImage when it is mounted, in /tmp, and from builds based on JuNest its enough to extract the AppImage with `--appimage-extract` and get the script from squashfs-root/.junest/usr/share/virtualbox.
 
 See also https://github.com/ivan-hc/VirtualBox-appimage/issues/7
 
 ---------------------------------
 
-### How to build it
+### How to build the JuNest-based AppImage
 
-Currently, the AppImage I produced contains the following structure:
+The latest releases are based on [JuNest](https://github.com/fsquillace/junest), it is enough tu follow the instructions on the README of the "Archimage" project, at https://github.com/ivan-hc/ArchImage and run the script https://github.com/ivan-hc/VirtualBox-appimage/blob/main/virtualbox-kvm-junest.sh into a dedicated new directory. No root mermissions are needed.
+
+---------------------------------
+
+### How to build the Conty-based AppImage
+
+The Conty-based AppImage contains the following structure:
 ```
 |---- AppRun
 |---- virtualbox.desktop
@@ -121,8 +127,10 @@ https://github.com/Kron4ek/Conty
 
 ## Known issues
 
-### ◆ Very slow first startup for Nvidia users
+### ◆ Very slow first startup for Nvidia users (Conty)
 At the first start, if necessary, the drivers for your video card will be downloaded, via Conty (see screenshot above). This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
+
+**Newer releases based on JuNest are faster, but lack of hardware accelleration** (see https://github.com/ivan-hc/ArchImage/issues/20).
 
 ### ◆ Shortcuts
 If you right-click on the VM to createa launcher, open the .desktop file and change the "Exec=" entry from
@@ -142,6 +150,8 @@ Exec=virtualbox VirtualBoxVM --comment ...
 
 ## Credits
 
+- JuNest https://github.com/fsquillace/junest
+- Archimage https://github.com/ivan-hc/ArchImage
 - Conty https://github.com/Kron4ek/Conty
 - VirtualBox KVM team https://github.com/cyberus-technology/virtualbox-kvm
 - ChaoticAUR team https://aur.chaotic.cx
