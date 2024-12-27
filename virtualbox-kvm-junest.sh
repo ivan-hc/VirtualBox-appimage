@@ -4,12 +4,12 @@
 APP=virtualbox-kvm
 BIN="virtualbox"
 DEPENDENCES="ca-certificates dbus \
-alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils \
-libpulse pulseaudio jack2 \
+alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils jack2 \
+pulseaudio pulseaudio-alsa libpulse libsndfile libasyncns libogg libvorbis flac opus mpg123 lame \
+libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse wireplumber \
 libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils libva sdl2 \
 kvantum qt6ct qt6-wayland \
 mesa vulkan-icd-loader vulkan-mesa-layers libva-mesa-driver"
-# libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse wireplumber \
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
