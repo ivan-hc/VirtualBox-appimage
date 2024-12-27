@@ -3,7 +3,13 @@
 # NAME OF THE APP BY REPLACING "SAMPLE"
 APP=virtualbox-kvm
 BIN="virtualbox"
-DEPENDENCES="ca-certificates alsa-lib alsa-plugins libpulse pulseaudio jack2 alsa-tools alsa-utils libpipewire pipewire pipewire-alsa pipewire-audio libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils libva sdl2 kvantum qt6ct qt6-wayland mesa vulkan-icd-loader vulkan-mesa-layers libva-mesa-driver"
+DEPENDENCES="ca-certificates dbus \
+alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils \
+libpulse pulseaudio jack2 \
+libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse \
+libpng gnutls openal xorg-xwayland wayland xorg-server xorg-apps curl virtualbox-kvm v4l-utils libva sdl2 \
+kvantum qt6ct qt6-wayland \
+mesa vulkan-icd-loader vulkan-mesa-layers libva-mesa-driver"
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
