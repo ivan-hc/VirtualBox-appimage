@@ -98,7 +98,7 @@ https://github.com/Kron4ek/Conty
 ## Known issues
 
 ### ◆ Very slow first startup for Nvidia users (Conty)
-At the first start, if necessary, the drivers for your video card will be downloaded, via Conty (see screenshot above). This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
+At the first start, if necessary, the drivers for your video card will be downloaded, via Conty. This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
 
 **Newer releases based on JuNest are faster, but lack of hardware accelleration** (see https://github.com/ivan-hc/ArchImage/issues/20).
 
