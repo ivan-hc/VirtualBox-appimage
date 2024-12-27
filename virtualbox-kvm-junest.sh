@@ -590,7 +590,11 @@ function _remove_more_bloatwares() {
 	_remove_some_bloatwares
  	rm -R -f ./"$APP".AppDir/.junest/home # remove the inbuilt home
 	rm -R -f ./"$APP".AppDir/.junest/usr/lib/python*/__pycache__/* # if python is installed, removing this directory can save several megabytes
+	rm -R -f ./"$APP".AppDir/.junest/usr/lib/libgo.so*
+	rm -R -f ./"$APP".AppDir/.junest/usr/lib/libgphobos.so*
+	rm -R -f ./"$APP".AppDir/.junest/usr/share/i18n
 	rm -R -f ./"$APP".AppDir/.junest/usr/share/man
+	rm -R -f ./"$APP".AppDir/.junest/usr/share/virtualbox/nls
 	#rm -R -f ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
 }
 
