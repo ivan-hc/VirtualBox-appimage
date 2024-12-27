@@ -594,7 +594,6 @@ function _remove_more_bloatwares() {
 	rm -R -f ./"$APP".AppDir/.junest/usr/lib/libgphobos.so*
 	rm -R -f ./"$APP".AppDir/.junest/usr/share/i18n
 	rm -R -f ./"$APP".AppDir/.junest/usr/share/man
-	rm -R -f ./"$APP".AppDir/.junest/usr/share/virtualbox/nls
 	#rm -R -f ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
 }
 
@@ -621,6 +620,7 @@ _enable_mountpoints_for_the_inbuilt_bubblewrap
 # Fix locale
 mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls
 rsync -av ./"$APP".AppDir/.junest/usr/share/virtualbox/nls/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls/
+rm -R -f ./"$APP".AppDir/.junest/usr/share/virtualbox/nls
 
 # Add guest additions
 if ! test -f ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso; then
