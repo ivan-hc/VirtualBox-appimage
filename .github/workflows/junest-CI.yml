@@ -1,0 +1,51 @@
+name: Release VirtualBox Appimage (JuNest)
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  schedule:
+    - cron: "0 14 * * 4"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: build
+      if: always()
+      run: |
+        sudo apt update && sudo apt install desktop-file-utils
+        chmod a+x ./virtualbox-kvm-junest.sh
+        ./virtualbox-kvm-junest.sh
+        mkdir dist
+        mv *AppImage* dist/
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4.4.0
+      with:
+        name: VirtualBox-x86_64.AppImage
+        path: 'dist'
+        
+  release:
+      needs: [build]
+      permissions: write-all
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/download-artifact@v4.1.8
+          with:
+            name: VirtualBox-x86_64.AppImage
+
+        - name: release
+          uses: marvinpinto/action-automatic-releases@latest
+          with:
+            title: Continuous build
+            automatic_release_tag: continuous
+            prerelease: false
+            draft: false
+            files: |
+              *.AppImage*
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
