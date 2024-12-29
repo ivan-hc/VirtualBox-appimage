@@ -21,7 +21,7 @@ chmod a+x ./*.AppImage
 ```
 ./*.AppImage
 ```
-NOTE, if you use the Conty-based release, run the first time from terminal, since the internal "Conty" script may detect if you need Nvidia drivers for your GPU (this may need seconds before you can use VirtualBox). The Junest-based release have no hardware accelleration at all.
+NOTE, if you use the Conty-based release, run the first time from terminal, since the internal "Conty" script may detect if you need Nvidia drivers for your GPU (this may need seconds before you can use VirtualBox). If you are an Nvidia user, for the JuNest-based build, hardware accelleration is provided by Conty. At first start it will install Nvidia drivers locally to allow the builtin Arch Linux container the use of hardware accelleration.
 
 This AppImage does NOT require libfuse2, being it a new generation one.
 
@@ -97,10 +97,8 @@ https://github.com/Kron4ek/Conty
 
 ## Known issues
 
-### ◆ Very slow first startup for Nvidia users (Conty)
+### ◆ Very slow first startup for Nvidia users
 At the first start, if necessary, the drivers for your video card will be downloaded, via Conty. This may take several seconds or even minutes. This behaviour will only be noticed if when you first start it, you launch VirtualBox from the terminal instead of using the launcher.
-
-**Newer releases based on JuNest are faster, but lack of hardware accelleration** (see https://github.com/ivan-hc/ArchImage/issues/20).
 
 ### ◆ Shortcuts
 If you right-click on the VM to createa launcher, open the .desktop file and change the "Exec=" entry from
