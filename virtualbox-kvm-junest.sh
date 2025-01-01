@@ -212,29 +212,34 @@ function _create_AppRun() {
 
 	[ -z "$NVIDIA_ON" ] && NVIDIA_ON=1
 	if [ "$NVIDIA_ON" = 1 ]; then
-	  DATADIR="${XDG_DATA_HOME:-$HOME/.local/share}"
-	  CONTY_DIR="${DATADIR}/Conty/overlayfs_shared"
-	  CACHEDIR="${XDG_CACHE_HOME:-$HOME/.cache}"
-	  [ -f /sys/module/nvidia/version ] && nvidia_driver_version="$(cat /sys/module/nvidia/version)"
-	  [ -f "${CONTY_DIR}"/nvidia/current-nvidia-version ] && nvidia_driver_conty="$(cat "${CONTY_DIR}"/nvidia/current-nvidia-version)"
-	  if [ "${nvidia_driver_version}" != "${nvidia_driver_conty}" ]; then
-	     if command -v curl >/dev/null 2>&1; then
-	        if ! curl --output /dev/null --silent --head --fail https://github.com 1>/dev/null; then
-	          notify-send "You are offline, cannot use Nvidia drivers"
-	        else
-	          notify-send "Configuring Nvidia drivers for this AppImage..."
-	          mkdir -p "${CACHEDIR}" && cd "${CACHEDIR}" || exit 1
-	          curl -Ls "https://raw.githubusercontent.com/ivan-hc/ArchImage/main/nvidia-junest.sh" > nvidia-junest.sh
-	          chmod a+x ./nvidia-junest.sh && ./nvidia-junest.sh
-	        fi
-	     else
-	        notify-send "Missing \"curl\" command, cannot use Nvidia drivers"
-	        echo "You need \"curl\" to download this script"
-	     fi
-	  fi
-	  [ -d "${CONTY_DIR}"/up/usr/bin ] && export PATH="${PATH}":"${CONTY_DIR}"/up/usr/bin:"${PATH}"
-	  [ -d "${CONTY_DIR}"/up/usr/lib ] && export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${CONTY_DIR}"/up/usr/lib:"${LD_LIBRARY_PATH}"
-	  [ -d "${CONTY_DIR}"/up/usr/share ] && export XDG_DATA_DIRS="${XDG_DATA_DIRS}":"${CONTY_DIR}"/up/usr/share:"${XDG_DATA_DIRS}"
+	   DATADIR="${XDG_DATA_HOME:-$HOME/.local/share}"
+	   CONTY_DIR="${DATADIR}/Conty/overlayfs_shared"
+	   [ -f /sys/module/nvidia/version ] && nvidia_driver_version="$(cat /sys/module/nvidia/version)"
+	   if [ -n "$nvidia_driver_version" ]; then
+	      [ ! -d "${CONTY_DIR}"/up/usr/share/glvnd ] && ln -s /usr/share/glvnd "${CONTY_DIR}"/up/usr/share/ 2>/dev/null
+	      [ ! -d "${CONTY_DIR}"/up/usr/share/nvidia ] && ln -s /usr/share/nvidia "${CONTY_DIR}"/up/usr/share/ 2>/dev/null
+	      ln -s /usr/share/nvidia "${CONTY_DIR}"/up/usr/share/ 2>/dev/null
+	      mkdir -p "${CONTY_DIR}"/up/usr/lib
+	      if [ ! -f "${CONTY_DIR}"/nvidia/current-nvidia-version ]; then
+	         mkdir -p "${CONTY_DIR}"/nvidia
+	         echo "${nvidia_driver_version}" > "${CONTY_DIR}"/nvidia/current-nvidia-version
+	      fi
+	      [ -f "${CONTY_DIR}"/nvidia/current-nvidia-version ] && nvidia_driver_conty=$(cat "${CONTY_DIR}"/nvidia/current-nvidia-version)
+	      if [ "${nvidia_driver_version}" != "${nvidia_driver_conty}" ]; then
+	      	rm -f "${CONTY_DIR}"/up/usr/lib/*
+	      	echo "${nvidia_driver_version}" > "${CONTY_DIR}"/nvidia/current-nvidia-version
+	      fi
+	      nvidialibs="libcuda libEGL_nvidia libGLX_nvidia libnvidia libOpenCL libvdpau_nvidia"
+	      for n in $nvidialibs; do
+	         nvidia_libs="$nvidia_libs $(find /usr/lib -name "$n*" -print0 | xargs -0)"
+	      done
+	      for n in $nvidia_libs; do
+	         libname=$(echo "$n" | sed 's:.*/::')
+	         [ ! -f "${CONTY_DIR}"/up/usr/lib/"$libname" ] && cp "$n" "${CONTY_DIR}"/up/usr/lib/
+	      done
+	      [ -d "${CONTY_DIR}"/up/usr/lib ] && export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${CONTY_DIR}"/up/usr/lib:"${LD_LIBRARY_PATH}"
+	      [ -d "${CONTY_DIR}"/up/usr/share ] && export XDG_DATA_DIRS="${XDG_DATA_DIRS}":"${CONTY_DIR}"/up/usr/share:"${XDG_DATA_DIRS}"
+	   fi
 	fi
 
 	if command -v sudo >/dev/null 2>&1; then
@@ -691,4 +696,4 @@ fi
 [ -z "$GITHUB_REPOSITORY_OWNER" ] && GITHUB_REPOSITORY_OWNER="ivan-hc"
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|VirtualBox-appimage|continuous|*x86_64.AppImage.zsync" \
-	./"$APP".AppDir "$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"-KVM_"$vboxver"-archimage4-x86_64.AppImage
+	./"$APP".AppDir "$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"-KVM_"$vboxver"-archimage4.1alpha-x86_64.AppImage
