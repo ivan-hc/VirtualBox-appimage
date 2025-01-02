@@ -216,27 +216,20 @@ function _create_AppRun() {
 	   CONTY_DIR="${DATADIR}/Conty/overlayfs_shared"
 	   [ -f /sys/module/nvidia/version ] && nvidia_driver_version="$(cat /sys/module/nvidia/version)"
 	   if [ -n "$nvidia_driver_version" ]; then
-	      [ ! -d "${CONTY_DIR}"/up/usr/share/glvnd ] && ln -s /usr/share/glvnd "${CONTY_DIR}"/up/usr/share/ 2>/dev/null
-	      [ ! -d "${CONTY_DIR}"/up/usr/share/nvidia ] && ln -s /usr/share/nvidia "${CONTY_DIR}"/up/usr/share/ 2>/dev/null
-	      ln -s /usr/share/nvidia "${CONTY_DIR}"/up/usr/share/ 2>/dev/null
-	      mkdir -p "${CONTY_DIR}"/up/usr/lib
-	      if [ ! -f "${CONTY_DIR}"/nvidia/current-nvidia-version ]; then
-	         mkdir -p "${CONTY_DIR}"/nvidia
-	         echo "${nvidia_driver_version}" > "${CONTY_DIR}"/nvidia/current-nvidia-version
-	      fi
+	      mkdir -p "${CONTY_DIR}"/nvidia "${CONTY_DIR}"/up/usr/lib "${CONTY_DIR}"/up/usr/share
+	      nvidia_data_dirs="egl glvnd nvidia vulkan"
+	      for d in $nvidia_data_dirs; do [ ! -d "${CONTY_DIR}"/up/usr/share/"$d" ] && ln -s /usr/share/"$d" "${CONTY_DIR}"/up/usr/share/ 2>/dev/null; done
+	      [ ! -f "${CONTY_DIR}"/nvidia/current-nvidia-version ] && echo "${nvidia_driver_version}" > "${CONTY_DIR}"/nvidia/current-nvidia-version
 	      [ -f "${CONTY_DIR}"/nvidia/current-nvidia-version ] && nvidia_driver_conty=$(cat "${CONTY_DIR}"/nvidia/current-nvidia-version)
 	      if [ "${nvidia_driver_version}" != "${nvidia_driver_conty}" ]; then
-	      	rm -f "${CONTY_DIR}"/up/usr/lib/*
-	      	echo "${nvidia_driver_version}" > "${CONTY_DIR}"/nvidia/current-nvidia-version
+	         rm -f "${CONTY_DIR}"/up/usr/lib/*; echo "${nvidia_driver_version}" > "${CONTY_DIR}"/nvidia/current-nvidia-version
 	      fi
-	      nvidialibs="libcuda libEGL_nvidia libGLX_nvidia libnvidia libOpenCL libvdpau_nvidia"
-	      for n in $nvidialibs; do
-	         nvidia_libs="$nvidia_libs $(find /usr/lib -name "$n*" -print0 | xargs -0)"
-	      done
-	      for n in $nvidia_libs; do
-	         libname=$(echo "$n" | sed 's:.*/::')
-	         [ ! -f "${CONTY_DIR}"/up/usr/lib/"$libname" ] && cp "$n" "${CONTY_DIR}"/up/usr/lib/
-	      done
+	      /sbin/ldconfig -p > "${CONTY_DIR}"/nvidia/host_libs
+	      grep -i "nvidia\|libcuda" "${CONTY_DIR}"/nvidia/host_libs | cut -d ">" -f 2 > "${CONTY_DIR}"/nvidia/host_nvidia_libs
+	      libnv_paths=$(grep "libnv" "${CONTY_DIR}"/nvidia/host_libs | cut -d ">" -f 2)
+	      for f in $libnv_paths; do strings "${f}" | grep -qi -m 1 "nvidia" && echo "${f}" >> "${CONTY_DIR}"/nvidia/host_nvidia_libs; done
+	      nvidia_libs=$(cat "${CONTY_DIR}"/nvidia/host_nvidia_libs)
+	      for n in $nvidia_libs; do libname=$(echo "$n" | sed 's:.*/::') && [ ! -f "${CONTY_DIR}"/up/usr/lib/"$libname" ] && cp "$n" "${CONTY_DIR}"/up/usr/lib/; done
 	      [ -d "${CONTY_DIR}"/up/usr/lib ] && export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${CONTY_DIR}"/up/usr/lib:"${LD_LIBRARY_PATH}"
 	      [ -d "${CONTY_DIR}"/up/usr/share ] && export XDG_DATA_DIRS="${XDG_DATA_DIRS}":"${CONTY_DIR}"/up/usr/share:"${XDG_DATA_DIRS}"
 	   fi
@@ -696,4 +689,4 @@ fi
 [ -z "$GITHUB_REPOSITORY_OWNER" ] && GITHUB_REPOSITORY_OWNER="ivan-hc"
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|VirtualBox-appimage|continuous|*x86_64.AppImage.zsync" \
-	./"$APP".AppDir "$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"-KVM_"$vboxver"-archimage4.1alpha-x86_64.AppImage
+	./"$APP".AppDir "$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')"-KVM_"$vboxver"-archimage4.1-x86_64.AppImage
