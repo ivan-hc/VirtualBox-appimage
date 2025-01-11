@@ -681,15 +681,14 @@ rm -R -f ./"$APP".AppDir/.junest/usr/share/virtualbox/nls
 
 # Add guest additions
 if ! test -f ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso; then
-	curl -#Lo VBoxGuestAdditions.iso https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso || exit 1
+	wget https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso -O ./VBoxGuestAdditions.iso || exit 1
 	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions
 	mv VBoxGuestAdditions.iso ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/ || exit 1
 fi
 
 # Add extension pack
-if [ -f ./Extension_Pack.tar ]; then
-	curl -#Lo Extension_Pack.tar https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
-fi
+wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
+wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack -O ./Extension_Pack.tar
 mkdir -p shrunk
 tar xfC ./Extension_Pack.tar shrunk
 rm -r shrunk/{darwin*,solaris*,win*}
