@@ -641,10 +641,17 @@ _remove_more_bloatwares() {
 	rm -Rf ./"$APP".AppDir/.junest/etc/makepkg.conf
 	rm -Rf ./"$APP".AppDir/.junest/etc/pacman*
 	rm -Rf ./"$APP".AppDir/.junest/usr/include # files related to the compiler
-	rm -R -f ./"$APP".AppDir/.junest/usr/lib/libgo.so*
-	rm -R -f ./"$APP".AppDir/.junest/usr/lib/libgphobos.so*
-	rm -R -f ./"$APP".AppDir/.junest/usr/share/i18n
+	rm -Rf ./"$APP".AppDir/.junest/usr/lib/cmake
+	rm -Rf ./"$APP".AppDir/.junest/usr/lib/gconv
+	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libgallium*
+	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libgo.so*
+	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libgphobos.so*
+	rm -Rf ./"$APP".AppDir/.junest/usr/share/gir*
+	rm -Rf ./"$APP".AppDir/.junest/usr/share/i18n
 	rm -Rf ./"$APP".AppDir/.junest/usr/share/man # AppImages are not ment to have man command
+	rm -Rf ./"$APP".AppDir/.junest/usr/share/terminfo
+	rm -Rf ./"$APP".AppDir/.junest/usr/share/vulkan
+	rm -Rf ./"$APP".AppDir/.junest/usr/share/z*
 	rm -Rf ./"$APP".AppDir/.junest/var/* # remove all packages downloaded with the package manager
  	rm -Rf ./"$APP".AppDir/.junest/home # remove the inbuilt home
 	rm -Rf ./"$APP".AppDir/.junest/usr/bin/gcc* \
