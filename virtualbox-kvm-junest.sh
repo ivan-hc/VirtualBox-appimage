@@ -660,7 +660,7 @@ _remove_more_bloatwares() {
 	rm -Rf ./"$APP".AppDir/.junest/usr/lib/python*/__pycache__/* # if python is installed, removing this directory can save several megabytes
 	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libgallium*
 	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libgo.so*
-	#rm -Rf ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
+	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libLLVM* # included in the compilation phase, can sometimes be excluded for daily use
 	rm -Rf ./"$APP".AppDir/.junest/var/* # remove all packages downloaded with the package manager
 }
 
