@@ -649,7 +649,7 @@ _remove_more_bloatwares() {
 	for r in $lib_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/lib/"$r"*
 	done
-	share_remove="gcc gir i18n include terminfo vulkan z"
+	share_remove="gcc gir i18n terminfo vulkan z"
 	for r in $share_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/share/"$r"*
 	done
@@ -657,6 +657,7 @@ _remove_more_bloatwares() {
 	find ./"$APP".AppDir/.junest/usr/share/doc/* -not -iname "*$BIN*" -a -not -name "." -delete 2> /dev/null #REMOVE ALL DOCUMENTATION NOT RELATED TO THE APP
 	find ./"$APP".AppDir/.junest/usr/share/locale/*/*/* -not -iname "*$BIN*" -a -not -name "." -delete 2> /dev/null #REMOVE ALL ADDITIONAL LOCALE FILES
 	rm -Rf ./"$APP".AppDir/.junest/home # remove the inbuilt home
+	rm -Rf ./"$APP".AppDir/.junest/usr/include # files related to the compiler
 	rm -Rf ./"$APP".AppDir/.junest/usr/share/man # AppImages are not ment to have man command
 	rm -Rf ./"$APP".AppDir/.junest/usr/lib/python*/__pycache__/* # if python is installed, removing this directory can save several megabytes
 	rm -Rf ./"$APP".AppDir/.junest/usr/lib/libgallium*
