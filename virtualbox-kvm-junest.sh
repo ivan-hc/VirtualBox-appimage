@@ -2,12 +2,9 @@
 
 APP=virtualbox-kvm
 BIN="virtualbox" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="dbus \
-alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils jack2 \
+DEPENDENCES="alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils jack2 \
 pulseaudio pulseaudio-alsa libpulse libsndfile libasyncns libogg libvorbis flac opus mpg123 lame \
-libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse wireplumber \
-qt6ct qt6-wayland xapp" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCES ARE NEEDED
-BASICSTUFF="binutils debugedit gzip" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+libpipewire pipewire pipewire-alsa pipewire-audio pipewire-pulse" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
@@ -17,11 +14,11 @@ vboxver=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbo
 #	KEYWORDS TO FIND AND SAVE WHEN COMPILING THE APPIMAGE
 #############################################################################
 
-BINSAVED="kmod lsmod"
+BINSAVED="kmod lsmod ldconfig"
 SHARESAVED="SAVESHAREPLEASE"
 lib_audio_keywords="alsa jack pipewire pulse"
-lib_browser_launcher="gio-launch-desktop libasound.so libatk-bridge libatspi libcloudproviders libdb- libdl.so libedit libepoxy libgtk-3.so.0 libjson-glib libnssutil libpthread.so librt.so libtinysparql libwayland-cursor libX11-xcb.so libxapp-gtk3-module.so libXcursor libXdamage libXi.so libXrandr p11 pk"
-LIBSAVED="audioconvert $lib_audio_keywords $lib_browser_launcher"
+lib_browser_launcher="gio-launch-desktop libasound.so libatk-bridge libatspi libcloudproviders libdb- libdl.so libedit libepoxy libgtk-3.so.0 libjson-glib libnssutil libpthread.so librt.so libtinysparql libwayland-cursor libX11-xcb.so libxapp-gtk3-module.so libXcursor libXdamage libXi.so libxkbfile.so libXrandr p11 pk"
+LIBSAVED="libxcb-cursor libxcb-util.so $lib_audio_keywords $lib_browser_launcher"
 
 [ -n "$lib_browser_launcher" ] && DEPENDENCES="$DEPENDENCES xapp hicolor-icon-theme"
 
@@ -353,7 +350,7 @@ case "$1" in
 'virtualbox'|*)
 	_JUNEST_CMD -- VirtualBox "$@"
 ;;
-esac | grep -v "You\|vboxdrv\|available for the current kernel\|Please recompile the kernel module\|sudo /sbin/vboxconfig" | cat -s
+esac
 HEREDOC
 chmod a+x "$APP".AppDir/AppRun
 sed -i "s/VERSION/$vboxver/g" "$APP".AppDir/AppRun
@@ -362,7 +359,7 @@ sed -i "s/VERSION/$vboxver/g" "$APP".AppDir/AppRun
 #	EXTRACT PACKAGES
 #############################################################################
 
-[ -z "$extraction_count" ] && extraction_count=1
+[ -z "$extraction_count" ] && extraction_count=0
 [ ! -f ./autodeps ] && echo "$extraction_count" > ./autodeps
 [ -f ./autodeps ] && autodeps=$(cat ./autodeps)
 [ "$autodeps" != "$extraction_count" ] && rm -Rf ./deps ./packages && echo "$extraction_count" > ./autodeps
@@ -505,6 +502,8 @@ _savelibs() {
 		cp -r ./archlinux/"$arg" "$APP".AppDir/"$arg" 2>/dev/null &
 	done
 	wait
+	core_libs=$(find ./"$APP".AppDir -type f)
+	lib_core=$(for c in $core_libs; do readelf -d "$c" 2>/dev/null | grep NEEDED | tr '[] ' '\n' | grep ".so"; done)
 
 	echo "◆ Detect libraries of the main package"
 	base_libs=$(find ./base -type f | uniq)
@@ -534,7 +533,7 @@ _savelibs() {
 	lib_base_8=$(echo "$lib_base_8" | tr ' ' '\n' | sort -u | xargs)
 	lib_base_9=$(for b in $lib_base_8; do readelf -d ./archlinux/.junest/usr/lib/"$b" 2>/dev/null | grep NEEDED | tr '[] ' '\n' | grep ".so"; done)
 	lib_base_9=$(echo "$lib_base_9" | tr ' ' '\n' | sort -u | xargs)
-	lib_base_libs="$lib_base_0 $lib_base_1 $lib_base_2 $lib_base_3 $lib_base_4 $lib_base_5 $lib_base_6 $lib_base_7 $lib_base_8 $lib_base_9 $lib_deps"
+	lib_base_libs="$lib_core $lib_base_0 $lib_base_1 $lib_base_2 $lib_base_3 $lib_base_4 $lib_base_5 $lib_base_6 $lib_base_7 $lib_base_8 $lib_base_9 $lib_deps"
 	lib_base_libs=$(echo "$lib_base_libs" | tr ' ' '\n' | sort -u | sed 's/.so.*/.so/' | xargs)
 	for l in $lib_base_libs; do
 		rsync -av ./archlinux/.junest/usr/lib/"$l"* ./"$APP".AppDir/.junest/usr/lib/ &
@@ -592,11 +591,11 @@ _remove_more_bloatwares() {
 	for r in $bin_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/bin/"$r"*
 	done
-	lib_remove="gcc cmake gconv libgphobos.so"
+	lib_remove="gcc"
 	for r in $lib_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/lib/"$r"*
 	done
-	share_remove="gcc gir i18n terminfo vulkan z"
+	share_remove="gcc"
 	for r in $share_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/share/"$r"*
 	done
@@ -627,33 +626,34 @@ _enable_mountpoints_for_the_inbuilt_bubblewrap() {
 
 # Fix locale
 mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls
-rsync -av ./"$APP".AppDir/.junest/usr/share/virtualbox/nls/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls/
+mv ./"$APP".AppDir/.junest/usr/share/virtualbox/nls/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls/
 rm -R -f ./"$APP".AppDir/.junest/usr/share/virtualbox/nls
 
 # Add guest additions
-if ! test -f ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso; then
+if ! test -f ./VBoxGuestAdditions.iso; then
 	wget https://download.virtualbox.org/virtualbox/"${vboxver}"/VBoxGuestAdditions_"${vboxver}".iso -O ./VBoxGuestAdditions.iso || exit 1
-	mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions
-	mv VBoxGuestAdditions.iso ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/ || exit 1
 fi
+mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions
+cp -r VBoxGuestAdditions.iso ./"$APP".AppDir/.junest/usr/lib/virtualbox/additions/ || exit 1
 
 # Add extension pack
-wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
-wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack -O ./Extension_Pack.tar
+if ! test -f ./Extension_Pack.tar; then
+	wget https://download.virtualbox.org/virtualbox/"${vboxver}"/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack -O ./Extension_Pack.tar
+fi
 mkdir -p shrunk
 tar xfC ./Extension_Pack.tar shrunk
 rm -r shrunk/{darwin*,solaris*,win*}
 tar -c --gzip --file shrunk.vbox-extpack -C shrunk .
 mkdir -p ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions
-cp shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
+cp -r shrunk.vbox-extpack ./"$APP".AppDir/.junest/usr/share/virtualbox/extensions/Oracle_VirtualBox_Extension_Pack-"${vboxver}".vbox-extpack
 mkdir -p ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/
-cp shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
+cp -r shrunk/ExtPack-license.txt ./"$APP".AppDir/.junest/usr/share/licenses/virtualbox-ext-oracle/PUEL
 mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VirtualBox_Extension_Pack
-rsync -av shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VirtualBox_Extension_Pack/
+cp -r shrunk/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/ExtensionPacks/Oracle_VirtualBox_Extension_Pack/
 
 # Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
 mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox
-cp ./"$APP".AppDir/.junest/usr/share/virtualbox/VBoxCreateUSBNode.sh ./"$APP".AppDir/.junest/usr/lib/virtualbox/
+cp -r ./"$APP".AppDir/.junest/usr/share/virtualbox/VBoxCreateUSBNode.sh ./"$APP".AppDir/.junest/usr/lib/virtualbox/
 chown -R root:vboxusers ./"$APP".AppDir/.junest/usr/lib/virtualbox
 
 # Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
@@ -664,6 +664,13 @@ SUBSYSTEM=="usb", ACTION=="add", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virt
 SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
 SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
 HEREDOC
+
+# Remove annoying vboxdrv messages
+sed -i 's/elif ! lsmod/elif ! echo vboxdrv/g' ./"$APP".AppDir/.junest/usr/bin/VBox
+sed -i 's# ! -c /dev/vboxdrv# -d /dev/vboxdrv#g' ./"$APP".AppDir/.junest/usr/bin/VBox
+
+rm -Rf ./"$APP".AppDir/.junest/usr/lib/virtualbox/virtualbox/*
+rmdir ./"$APP".AppDir/.junest/usr/lib/virtualbox/virtualbox 2>/dev/null
 
 _remove_more_bloatwares
 find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \; 2>/dev/null
