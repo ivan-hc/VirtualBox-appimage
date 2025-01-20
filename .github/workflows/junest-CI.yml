@@ -25,8 +25,8 @@ jobs:
 
     - name: Check version file
       run: |
-       cat ~/version
-       echo "APP_VERSION=$(cat ~/version)" >> "${GITHUB_ENV}"
+       cat ./version
+       echo "APP_VERSION=$(cat ./version)" >> "${GITHUB_ENV}"
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4.4.3
