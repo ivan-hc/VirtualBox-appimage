@@ -215,6 +215,7 @@ cat <<-'HEREDOC' >> "$APP".AppDir/AppRun
 HERE="$(dirname "$(readlink -f "$0")")"
 export UNION_PRELOAD="$HERE"
 export JUNEST_HOME="$HERE"/.junest
+export MY_DIR="$JUNEST_HOME"/usr/lib/virtualbox
 
 if command -v unshare >/dev/null 2>&1 && ! unshare --user -p /bin/true >/dev/null 2>&1; then
    PROOT_ON=1
@@ -624,6 +625,10 @@ _enable_mountpoints_for_the_inbuilt_bubblewrap() {
 	[ ! -f ./"$APP".AppDir/.junest/etc/asound.conf ] && touch ./"$APP".AppDir/.junest/etc/asound.conf
 }
 
+#############################################################################
+#	PATCH FOR VIRTUALBOX
+#############################################################################
+
 # Fix locale
 mkdir -p ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls
 mv ./"$APP".AppDir/.junest/usr/share/virtualbox/nls/* ./"$APP".AppDir/.junest/usr/lib/virtualbox/nls/
@@ -665,12 +670,12 @@ SUBSYSTEM=="usb_device", ACTION=="remove", RUN+="/usr/lib/virtualbox/VBoxCreateU
 SUBSYSTEM=="usb", ACTION=="remove", ENV{DEVTYPE}=="usb_device", RUN+="/usr/lib/virtualbox/VBoxCreateUSBNode.sh --remove $major $minor"
 HEREDOC
 
-# Remove annoying vboxdrv messages
-sed -i 's/elif ! lsmod/elif ! echo vboxdrv/g' ./"$APP".AppDir/.junest/usr/bin/VBox
-sed -i 's# ! -c /dev/vboxdrv# -d /dev/vboxdrv#g' ./"$APP".AppDir/.junest/usr/bin/VBox
+# Allow VirtualBox to be used in PROOT mode
+sed -i 's/^MY_DIR=/#MY_DIR=/g' ./"$APP".AppDir/.junest/usr/bin/VBox || exit 1
 
-rm -Rf ./"$APP".AppDir/.junest/usr/lib/virtualbox/virtualbox/*
-rmdir ./"$APP".AppDir/.junest/usr/lib/virtualbox/virtualbox 2>/dev/null
+# Remove annoying vboxdrv messages
+sed -i 's/elif ! lsmod/elif ! echo vboxdrv/g' ./"$APP".AppDir/.junest/usr/bin/VBox || exit 1
+sed -i 's# ! -c /dev/vboxdrv# -d /dev/vboxdrv#g' ./"$APP".AppDir/.junest/usr/bin/VBox || exit 1
 
 _remove_more_bloatwares
 find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \; 2>/dev/null
