@@ -26,7 +26,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4.4.0
       with:
-        name: VirtualBox-x86_64.AppImage
+        name: AppImage
         path: 'dist'
         
   release:
