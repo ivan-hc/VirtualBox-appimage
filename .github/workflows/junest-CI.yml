@@ -23,11 +23,22 @@ jobs:
         mkdir dist
         mv *AppImage* dist/
 
+    - name: Check version file
+      run: |
+       cat ~/version
+       echo "APP_VERSION=$(cat ~/version)" >> "${GITHUB_ENV}"
+    
     - name: Upload artifact
-      uses: actions/upload-artifact@v4.4.0
+      uses: actions/upload-artifact@v4.4.3
       with:
         name: AppImage
         path: 'dist'
+        
+    - name: Upload version file
+      uses: actions/upload-artifact@v4.4.3
+      with:
+       name: version
+       path: ~/version
         
   release:
       needs: [build]
