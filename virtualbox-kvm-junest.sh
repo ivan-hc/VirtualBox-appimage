@@ -693,8 +693,7 @@ if test -f ./*.AppImage; then rm -Rf ./*archimage*.AppImage; fi
 APPNAME=$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')
 VERSION="$vboxver"
 UPINFO="gh-releases-zsync|$(echo "$GITHUB_REPOSITORY" | tr '/' '|')|latest|*.AppImage.zsync"
-echo "$VERSION" > ~/version
-
+echo "$VERSION" > ./version
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "$UPINFO" \
 	./"$APP".AppDir "$APPNAME"_"$VERSION"-archimage4.3-x86_64.AppImage
