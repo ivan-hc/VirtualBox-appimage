@@ -691,10 +691,9 @@ _enable_mountpoints_for_the_inbuilt_bubblewrap
 if test -f ./*.AppImage; then rm -Rf ./*archimage*.AppImage; fi
 
 APPNAME=$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')
-REPO="VirtualBox-appimage"
-TAG="continuous"
 VERSION="$vboxver"
-UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|$REPO|$TAG|*x86_64.AppImage.zsync"
+UPINFO="gh-releases-zsync|$(echo "$GITHUB_REPOSITORY" | tr '/' '|')|latest|*.AppImage.zsync"
+echo "$VERSION" > ~/version
 
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "$UPINFO" \
