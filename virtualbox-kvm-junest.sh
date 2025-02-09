@@ -677,6 +677,9 @@ sed -i 's/^MY_DIR=/#MY_DIR=/g' ./"$APP".AppDir/.junest/usr/bin/VBox || exit 1
 sed -i 's/elif ! lsmod/elif ! echo vboxdrv/g' ./"$APP".AppDir/.junest/usr/bin/VBox || exit 1
 sed -i 's# ! -c /dev/vboxdrv# -d /dev/vboxdrv#g' ./"$APP".AppDir/.junest/usr/bin/VBox || exit 1
 
+# Fix libcurl
+rm -f ./"$APP".AppDir/.junest/usr/lib/libcurl* && cp -r ./archlinux/.junest/usr/lib/libcurl* ./"$APP".AppDir/.junest/usr/lib/
+
 _remove_more_bloatwares
 find ./"$APP".AppDir/.junest/usr/lib ./"$APP".AppDir/.junest/usr/lib32 -type f -regex '.*\.a' -exec rm -f {} \; 2>/dev/null
 find ./"$APP".AppDir/.junest/usr -type f -regex '.*\.so.*' -exec strip --strip-debug {} \;
