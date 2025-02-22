@@ -592,11 +592,11 @@ _remove_more_bloatwares() {
 	for r in $bin_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/bin/"$r"*
 	done
-	lib_remove="gcc"
+	lib_remove="cmake gcc gconv libgphobos"
 	for r in $lib_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/lib/"$r"*
 	done
-	share_remove="gcc"
+	share_remove="gcc i18n"
 	for r in $share_remove; do
 		rm -Rf ./"$APP".AppDir/.junest/usr/share/"$r"*
 	done
