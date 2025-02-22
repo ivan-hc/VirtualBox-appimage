@@ -696,7 +696,7 @@ if test -f ./*.AppImage; then rm -Rf ./*archimage*.AppImage; fi
 #APPNAME=$(cat ./"$APP".AppDir/*.desktop | grep 'Name=' | head -1 | cut -c 6- | sed 's/ /-/g')
 APPNAME="VirtualBox-KVM"
 VERSION="$vboxver"
-UPINFO="gh-releases-zsync|$(echo "$GITHUB_REPOSITORY" | tr '/' '|')|latest|*.AppImage.zsync"
+UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|VirtualBox-appimage|latest|*x86_64.AppImage.zsync"
 echo "$VERSION" > ./version
 ARCH=x86_64 ./appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
 	-u "$UPINFO" \
