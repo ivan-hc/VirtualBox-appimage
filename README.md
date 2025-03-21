@@ -2,7 +2,14 @@ Unofficial AppImage of VirtualBox built on top of "JuNest" and formerly on "Cont
 
 This AppImage includes Guest Additions ISO and the Extension Pack.
 
-NOTE, Oracle VM VirtualBox Extension Pack is released with PUEL license https://www.virtualbox.org/wiki/VirtualBox_PUEL
+Oracle VM VirtualBox Extension Pack is released with PUEL license https://www.virtualbox.org/wiki/VirtualBox_PUEL
+
+--------------------------------------------------
+### NOTE: This wrapper is not verified by, affiliated with, or supported by Oracle.
+
+**The base software is under a proprietary license and unofficially repackaged as an AppImage for demonstration purposes, for the original authors, to promote this packaging format to them. Consider this package as "experimental". I also invite you to request the authors to release an official AppImage, and if they agree, you can show this repository as a proof of concept.**
+
+--------------------------------------------------
 
 | ![Istantanea_2024-08-05_21-52-01 png](https://github.com/user-attachments/assets/2b3b9741-25bd-4f77-b753-6cd46762c567) | ![Istantanea_2024-08-05_21-55-33 png](https://github.com/user-attachments/assets/4b231fd4-555a-46eb-b22b-f84a174ddcd1) | ![Istantanea_2024-08-05_21-56-39 png](https://github.com/user-attachments/assets/cf5d1029-f1e6-427e-b3e6-54cbdf3e288f) |
 | - | - | - |
