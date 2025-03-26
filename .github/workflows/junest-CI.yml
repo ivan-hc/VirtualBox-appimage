@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
@@ -18,6 +18,8 @@ jobs:
       if: always()
       run: |
         sudo apt update && sudo apt install desktop-file-utils
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
         chmod a+x ./virtualbox-kvm-junest.sh
         ./virtualbox-kvm-junest.sh
         mkdir dist
