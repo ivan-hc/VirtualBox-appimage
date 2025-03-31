@@ -334,10 +334,10 @@ EXEC=$(grep -e '^Exec=.*' "${HERE}"/*.desktop | head -n 1 | cut -d "=" -f 2- | s
 
 case "$1" in
 '')
-	_JUNEST_CMD -- virtualbox
+	_JUNEST_CMD -- /usr/bin/virtualbox
 	;;
 'VirtualBoxVM')
-	_JUNEST_CMD -- VirtualBoxVM "$@"
+	_JUNEST_CMD -- /usr/bin/VirtualBoxVM "$@"
 	;;
 '-h'|'--help')
 	Show_help_message
@@ -349,7 +349,7 @@ case "$1" in
 	echo "VirtualBox VERSION KVM"
 	;;
 'virtualbox'|*)
-	_JUNEST_CMD -- VirtualBox "$@"
+	_JUNEST_CMD -- /usr/bin/VirtualBox "$@"
 ;;
 esac
 HEREDOC
