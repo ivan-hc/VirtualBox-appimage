@@ -18,7 +18,7 @@ BINSAVED="kmod lsmod ldconfig"
 SHARESAVED="SAVESHAREPLEASE"
 lib_audio_keywords="alsa jack pipewire pulse"
 lib_browser_launcher="gio-launch-desktop libasound.so libatk-bridge libatspi libcloudproviders libdb- libdl.so libedit libepoxy libgtk-3.so.0 libjson-glib libnssutil libpthread.so librt.so libtinysparql libwayland-cursor libX11-xcb.so libxapp-gtk3-module.so libXcursor libXdamage libXi.so libxkbfile.so libXrandr p11 pk"
-LIBSAVED="libicui libxcb-cursor libxcb-util.so $lib_audio_keywords $lib_browser_launcher"
+LIBSAVED="libicui libxcb-cursor libxcb-util.so libxml2 $lib_audio_keywords $lib_browser_launcher"
 
 [ -n "$lib_browser_launcher" ] && DEPENDENCES="$DEPENDENCES xapp hicolor-icon-theme"
 
@@ -120,6 +120,7 @@ if [ -n "$DEPENDENCES" ]; then
 fi
 if [ -n "$APP" ]; then
 	./.local/share/junest/bin/junest -- yay --noconfirm -S alsa-lib gtk3 xapp
+	./.local/share/junest/bin/junest -- yay --noconfirm -S libxml2-legacy
 	./.local/share/junest/bin/junest -- yay --noconfirm -S "$APP"
 	./.local/share/junest/bin/junest -- glib-compile-schemas /usr/share/glib-2.0/schemas/
 else
