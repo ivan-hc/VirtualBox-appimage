@@ -410,6 +410,7 @@ printf -- "\n-------------------------------------------------------------------
 
 _run_quick_sharun() {
 	cd archlinux || exit 1
+	rm -Rf AppDir/*
 	SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/quick-sharun.sh"
 
 	if [ ! -f ./quick-sharun ]; then
