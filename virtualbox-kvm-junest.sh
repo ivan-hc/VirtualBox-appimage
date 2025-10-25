@@ -85,6 +85,7 @@ _post_installation_processes() {
 }
 
 vboxver=$(curl -Ls https://gitlab.com/chaotic-aur/pkgbuilds/-/raw/main/virtualbox-kvm/PKGBUILD | grep vboxver | head -1 | tr "'" '\n' | grep "^[0-9]")
+export ICON="virtualbox.png"
 
 ##########################################################################################################################################################
 #	SETUP THE ENVIRONMENT
