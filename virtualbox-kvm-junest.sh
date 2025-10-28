@@ -35,6 +35,8 @@ _post_installation_processes() {
 	#	PATCH FOR VIRTUALBOX
 	#############################################################################
 
+	sed -i "s/VERSION/$vboxver/g" AppDir/AppRun
+
 	# Fix locale
 	mkdir -p AppDir/.junest/usr/lib/virtualbox/nls
 	mv AppDir/.junest/usr/share/virtualbox/nls/* AppDir/.junest/usr/lib/virtualbox/nls/
@@ -77,7 +79,7 @@ _post_installation_processes() {
 	HEREDOC
 
 	# Allow VirtualBox to be used in PROOT mode
-	sed -i 's/^MY_DIR=/#MY_DIR=/g' AppDir/.junest/usr/bin/VBox || exit 1
+	sed -i 's#^MY_DIR=.*#MY_DIR="${JUNEST_HOME}/usr/lib/virtualbox"#g' AppDir/.junest/usr/bin/VBox || exit 1
 
 	# Remove annoying vboxdrv messages
 	sed -i 's/elif ! lsmod/elif ! echo vboxdrv/g' AppDir/.junest/usr/bin/VBox || exit 1
