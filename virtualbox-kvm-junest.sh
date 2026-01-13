@@ -2,7 +2,7 @@
 
 APP=virtualbox-kvm
 BIN="virtualbox" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils dbus flac jack2 lame libasyncns libogg libpipewire libpulse libsndfile libvorbis mpg123 opus pipewire pipewire-alsa pipewire-audio procps-ng pulseaudio pulseaudio-alsa qt6-base" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+DEPENDENCES="alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils dbus flac jack2 lame libasyncns libogg libpipewire libpulse libsndfile libvorbis mpg123 opus pipewire pipewire-alsa pipewire-audio procps-ng pulseaudio pulseaudio-alsa qt6-base vulkan-icd-loader" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
