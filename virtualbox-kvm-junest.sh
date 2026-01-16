@@ -2,7 +2,9 @@
 
 APP=virtualbox-kvm
 BIN="virtualbox" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
-DEPENDENCES="alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils dbus flac jack2 lame libasyncns libogg libpipewire libpulse libsndfile libvorbis mpg123 opus pipewire pipewire-alsa pipewire-audio procps-ng pulseaudio pulseaudio-alsa qt6-base vulkan-icd-loader" #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+audio_pkgs="alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils flac jack2 lame libogg libpipewire libpulse libvorbis mpg123 opus pipewire pipewire-alsa pipewire-audio pulseaudio pulseaudio-alsa"
+vulkan_pkgs="libdisplay-info libdrm libxcb libxshmfence llvm-libs spirv-tools vulkan-asahi vulkan-gfxstream vulkan-icd-loader vulkan-intel vulkan-mesa-implicit-layers vulkan-nouveau vulkan-radeon vulkan-swrast vulkan-tools vulkan-virtio"
+DEPENDENCES=$(echo "$audio_pkgs $vulkan_pkgs dbus libasyncns libsndfile procps-ng qt6-base" | tr ' ' '\n' | sort -u | xargs) #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
@@ -152,81 +154,84 @@ export NVIDIA_ON=1
 cat <<-'HEREDOC' >> AppDir/AppRun
 
 if command -v sudo >/dev/null 2>&1; then
-	export SUDOCMD="sudo"
+    export SUDOCMD="sudo"
 elif command -v doas >/dev/null 2>&1; then
-	export SUDOCMD="doas"
+    export SUDOCMD="doas"
 else
-	echo 'ERROR: No sudo or doas found'
-	exit 1
+    echo 'ERROR: No sudo or doas found'
+    exit 1
 fi
 
 Show_help_message() {
-	printf " Available options:\n"
-	printf "\n  --vbox-usb-enable\n"
-	printf "\n	Enable USB support in Virtual Machines. Requires \"sudo\" password.\n"
-	printf "\n	The above option does the following:\n"
-	printf "\n	- Creates the \"vboxusers\" group"
-	printf "\n	- Adds your \$USER to the \"vboxusers\" group"
-	printf "\n	- Creates the /usr/lib/virtualbox directory on the host system"
-	printf "\n	- Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
-	printf "\n	- Creates the /etc/udev/rules.d directory"
-	printf "\n	- Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
-	printf "\n  VirtualBoxVM\n"
-	printf "\n	A VirtualBox command to handle Virtual Machines via command line\n\n"
+    printf " Available options:\n"
+    printf "\n  --vbox-usb-enable\n"
+    printf "\n	Enable USB support in Virtual Machines. Requires \"sudo\" password.\n"
+    printf "\n	The above option does the following:\n"
+    printf "\n	- Creates the \"vboxusers\" group"
+    printf "\n	- Adds your \$USER to the \"vboxusers\" group"
+    printf "\n	- Creates the /usr/lib/virtualbox directory on the host system"
+    printf "\n	- Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
+    printf "\n	- Creates the /etc/udev/rules.d directory"
+    printf "\n	- Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
+    printf "\n  VirtualBoxVM\n"
+    printf "\n	A VirtualBox command to handle Virtual Machines via command line\n\n"
 }
 
 VBoxUSB_enable() {
-	printf "\n The above option does the following:\n"
-	printf "\n - Creates the \"vboxusers\" group"
-	printf "\n - Adds your \$USER to the \"vboxusers\" group"
-	printf "\n - Creates the /usr/lib/virtualbox directory on the host system"
-	printf "\n - Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
-	printf "\n - Creates the /etc/udev/rules.d directory"
-	printf "\n - Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
-	printf "\n See also https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through\n"
-	printf "\nAuthentication is required\n"
-	if ! test -f /usr/lib/virtualbox/VBoxCreateUSBNode.sh; then
-		# Create the "vboxusers" group and add $USER
-		$SUDOCMD groupadd -r vboxusers -U "$USER" 
-		# Create the directory /usr/lib/virtualbox on the host system
-		$SUDOCMD mkdir -p /usr/lib/virtualbox
-		# Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
-		_JUNEST_CMD -- cp /usr/share/virtualbox/VBoxCreateUSBNode.sh ./
-		chmod a+x VBoxCreateUSBNode.sh
-		$SUDOCMD mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
-		$SUDOCMD chown -R root:vboxusers /usr/lib/virtualbox
-	fi
-	if ! test -f /etc/udev/rules.d/60-vboxusb.rules; then
-		# Create the directory /etc/udev/rules.d
-		$SUDOCMD mkdir -p /etc/udev/rules.d
-		# Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
-		_JUNEST_CMD -- cp /etc/udev/rules.d/60-vboxusb.rules ./
-		$SUDOCMD mv 60-vboxusb.rules /etc/udev/rules.d/
-		# Reload the udev rules
-		$SUDOCMD systemctl reload systemd-udevd
-	fi
-	printf "\nIt is recommended that you reboot for the changes to take effect.\n"
+    printf "\n The above option does the following:\n"
+    printf "\n - Creates the \"vboxusers\" group"
+    printf "\n - Adds your \$USER to the \"vboxusers\" group"
+    printf "\n - Creates the /usr/lib/virtualbox directory on the host system"
+    printf "\n - Installs the \"VBoxCreateUSBNode.sh\" script in /usr/lib/virtualbox"
+    printf "\n - Creates the /etc/udev/rules.d directory"
+    printf "\n - Creates and installs the \"60-vboxusb.rules\" file in /etc/udev/rules.d\n"
+    printf "\n See also https://github.com/cyberus-technology/virtualbox-kvm#usb-pass-through\n"
+    printf "\nAuthentication is required\n"
+    if ! test -f /usr/lib/virtualbox/VBoxCreateUSBNode.sh; then
+        # Create the "vboxusers" group and add $USER
+        $SUDOCMD groupadd -r vboxusers -U "$USER" 
+        # Create the directory /usr/lib/virtualbox on the host system
+        $SUDOCMD mkdir -p /usr/lib/virtualbox
+        # Install the "VBoxCreateUSBNode.sh" script in /usr/lib/virtualbox
+        _JUNEST_CMD -- cp /usr/share/virtualbox/VBoxCreateUSBNode.sh ./
+        chmod a+x VBoxCreateUSBNode.sh
+        $SUDOCMD mv VBoxCreateUSBNode.sh /usr/lib/virtualbox/
+        $SUDOCMD chown -R root:vboxusers /usr/lib/virtualbox
+    fi
+    if ! test -f /etc/udev/rules.d/60-vboxusb.rules; then
+        # Create the directory /etc/udev/rules.d
+        $SUDOCMD mkdir -p /etc/udev/rules.d
+        # Create and install the 60-vboxusb.rules file in /etc/udev/rules.d
+        _JUNEST_CMD -- cp /etc/udev/rules.d/60-vboxusb.rules ./
+        $SUDOCMD mv 60-vboxusb.rules /etc/udev/rules.d/
+        # Reload the udev rules
+        $SUDOCMD systemctl reload systemd-udevd
+    fi
+    printf "\nIt is recommended that you reboot for the changes to take effect.\n"
 }
 
 case "$1" in
 '')
-	_JUNEST_CMD -- /usr/bin/virtualbox
-	;;
+      _JUNEST_CMD -- /usr/bin/virtualbox
+      ;;
 'VirtualBoxVM')
-	_JUNEST_CMD -- /usr/bin/VirtualBoxVM "$@"
-	;;
+      _JUNEST_CMD -- /usr/bin/VirtualBoxVM "$@"
+      ;;
 '-h'|'--help')
-	Show_help_message
-	;;
+      Show_help_message
+      ;;
 '--vbox-usb-enable')
-	VBoxUSB_enable
-	;;
+      VBoxUSB_enable
+      ;;
 '-v'|'--version')
-	echo "VirtualBox VERSION KVM"
-	;;
+      echo "VirtualBox VERSION KVM"
+      ;;
 'virtualbox'|*)
-	_JUNEST_CMD -- /usr/bin/VirtualBox "$@"
-;;
+      _JUNEST_CMD -- /usr/bin/VirtualBox "$@"
+      ;;
+'vulkaninfo')
+      _JUNEST_CMD -- vulkaninfo "$@"
+      ;;
 esac
 
 HEREDOC
