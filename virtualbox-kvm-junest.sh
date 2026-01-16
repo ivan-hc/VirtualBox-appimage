@@ -229,9 +229,6 @@ case "$1" in
 'virtualbox'|*)
       _JUNEST_CMD -- /usr/bin/VirtualBox "$@"
       ;;
-'vulkaninfo')
-      _JUNEST_CMD -- vulkaninfo "$@"
-      ;;
 esac
 
 HEREDOC
