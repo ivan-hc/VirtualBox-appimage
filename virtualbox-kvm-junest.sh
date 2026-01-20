@@ -2,9 +2,11 @@
 
 APP=virtualbox-kvm
 BIN="virtualbox" #CHANGE THIS IF THE NAME OF THE BINARY IS DIFFERENT FROM "$APP" (for example, the binary of "obs-studio" is "obs")
+vbox_depends=$(curl -Ls "https://raw.githubusercontent.com/archlinux/aur/refs/heads/virtualbox-kvm/.SRCINFO" | grep "depends =" | grep -v "makedepends\|optdepends" | awk '{print $3}' | xargs)
+[ -z "$vbox_depends" ] && exit 1
 audio_pkgs="alsa-lib alsa-oss alsa-plugins alsa-tools alsa-utils flac jack2 lame libogg libpipewire libpulse libvorbis mpg123 opus pipewire pipewire-alsa pipewire-audio pulseaudio pulseaudio-alsa"
 vulkan_pkgs="libdisplay-info libdrm libxcb libxshmfence llvm-libs spirv-tools vulkan-asahi vulkan-gfxstream vulkan-icd-loader vulkan-intel vulkan-mesa-implicit-layers vulkan-nouveau vulkan-radeon vulkan-swrast vulkan-tools vulkan-virtio"
-DEPENDENCES=$(echo "$audio_pkgs $vulkan_pkgs dbus libasyncns libsndfile procps-ng qt6-base" | tr ' ' '\n' | sort -u | xargs) #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
+DEPENDENCES=$(echo "$audio_pkgs $vulkan_pkgs $vbox_depends dbus libasyncns libsndfile procps-ng qt6-base" | tr ' ' '\n' | sort -u | xargs) #SYNTAX: "APP1 APP2 APP3 APP4...", LEAVE BLANK IF NO OTHER DEPENDENCIES ARE NEEDED
 BASICSTUFF="binutils debugedit gzip"
 COMPILERS="base-devel"
 
