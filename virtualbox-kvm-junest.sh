@@ -39,10 +39,9 @@ _post_installation_processes() {
 
 	sed -i "s/VERSION/$vboxver/g" AppDir/AppRun
 
-	# Fix locale
+	# Workaround locale troubles (in some releases the language is not correctly detected)
 	mkdir -p AppDir/.junest/usr/lib/virtualbox/nls
-	mv AppDir/.junest/usr/share/virtualbox/nls/* AppDir/.junest/usr/lib/virtualbox/nls/
-	rm -R -f AppDir/.junest/usr/share/virtualbox/nls
+	cp -r AppDir/.junest/usr/share/virtualbox/nls/* AppDir/.junest/usr/lib/virtualbox/nls/
 
 	# Add guest additions
 	if ! test -f ./VBoxGuestAdditions.iso; then
