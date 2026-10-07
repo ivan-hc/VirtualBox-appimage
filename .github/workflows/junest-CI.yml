@@ -31,13 +31,13 @@ jobs:
        echo "APP_VERSION=$(cat ./version)" >> "${GITHUB_ENV}"
     
     - name: Upload artifact
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@v7.0.2
       with:
         name: AppImage
         path: 'dist'
         
     - name: Upload version file
-      uses: actions/upload-artifact@v7.0.1
+      uses: actions/upload-artifact@v7.0.2
       with:
        name: version
        path: ./version
@@ -48,10 +48,10 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-        - uses: actions/download-artifact@v8.0.1
+        - uses: actions/download-artifact@v8.0.2
           with:
             name: AppImage
-        - uses: actions/download-artifact@v8.0.1
+        - uses: actions/download-artifact@v8.0.2
           with:
             name: version
 
